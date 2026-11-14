@@ -1,13 +1,15 @@
 # Validation
 
-## Current miniature tree version
+## Current larger tree / asymmetric gifts version
 
 - Removed the angel, rig, animation updates, wave control and angel download. Current combined GLB contains no angel nodes, skins or animations.
-- Tree, ribbon and ornaments share a parent with uniform scale 0.25. Gifts use 0.1375 / 0.1125 / 0.095, exactly one quarter of their former 0.55 / 0.45 / 0.38 scales.
-- Combined GLB contains nine named gift groups arranged around the tree. Dome and base retain their previous size.
+- Tree, ribbon and ornaments share a parent with uniform scale 0.75, three times the preceding miniature version. Gifts use 0.1375 / 0.1125 / 0.095, exactly one quarter of their former 0.55 / 0.45 / 0.38 scales.
+- Combined GLB contains nine named gift groups arranged asymmetrically beside the tree (seven clustered, two trailing forward). Dome and base retain their previous size.
+- Snow starts uniformly throughout the dome volume and respawns across its curved ceiling, rather than a narrow central cap. A 180-second simulation of the actual update loop kept all 500 particles inside the dome; 283 occupied the outer radius beyond 1.5 units.
+- Browser shake control and full-scene export completed without errors.
 - Browser render inspected with winter room, glass reflections, DOF, bloom, snow crystals and snowdrifts.
 - Ornament add/undo changed the count from 16 to 17 and back. Snow and Classic palette changes completed. No browser error logs during these actions or GLB export.
-- Downloaded the current complete scene and replaced the public GLB (8,249,228 bytes).
+- Downloaded the current complete scene and replaced the public GLB (8,248,964 bytes).
 - Khronos glTF Validator with maxIssues 100000: **0 errors, 1 warning**. The tree material uses runtime-generated tangent space; other viewers can shade it differently.
 - Production bundle builds successfully. No API key or runtime paid API is required.
 
