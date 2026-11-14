@@ -40,7 +40,8 @@ export function rigAngel(source){
       else {a='Chest';b='Head';w=smooth(.55,.59,y);}
       indices.push(w<1?index('Angel_'+a):0,w>0?index('Angel_'+b):0,0,0);weights.push(1-w,w,0,0);
     }
-    geometry.setAttribute('skinIndex',new T.Uint16BufferAttribute(indices,4));geometry.setAttribute('skinWeight',new T.Float32BufferAttribute(weights,4));
+    const softened=softenJointWeights(geometry,indices,weights,bones.length);
+    geometry.setAttribute('skinIndex',new T.Uint16BufferAttribute(softened.indices,4));geometry.setAttribute('skinWeight',new T.Float32BufferAttribute(softened.weights,4));
     // Spread the dress across the seated thighs, preserving the original texture.
     for(let i=0;i<pos.count;i++){const y=pos.getY(i);if(y>.18&&y<.40&&(y>.265||Math.hypot(pos.getX(i),pos.getZ(i))>.115)){const t=1-smooth(.20,.40,y),z=pos.getZ(i);pos.setXYZ(i,pos.getX(i)*(1+.22*t),y+.045*(1-smooth(.20,.34,y))+Math.max(0,z)*.18*t,z*(z>0?1+.20*t:1+.20*t));}}
     pos.needsUpdate=true;geometry.computeVertexNormals();
@@ -48,13 +49,35 @@ export function rigAngel(source){
   }
   function seat(){
     pelvis.position.y=.10;
-    for(const side of ['Left','Right']){byName['Angel_'+side+'Thigh'].rotation.x=-1.45;byName['Angel_'+side+'Shin'].rotation.x=.25;byName['Angel_'+side+'Foot'].rotation.x=1.2;}
-    byName.Angel_LeftArm.rotation.set(0,0,0);byName.Angel_LeftForeArm.rotation.z=1.15;
-    byName.Angel_RightArm.rotation.z=-.15;byName.Angel_RightForeArm.rotation.z=1.55;byName.Angel_RightHand.rotation.y=-.2;
+    for(const side of ['Left','Right']){byName['Angel_'+side+'Thigh'].rotation.x=-1.45;byName['Angel_'+side+'Shin'].rotation.x=.25;byName['Angel_'+side+'Foot'].rotation.x=0;}
+    byName.Angel_LeftArm.rotation.set(0,0,.30);byName.Angel_LeftForeArm.rotation.z=.30;
+    byName.Angel_RightArm.rotation.z=.18;byName.Angel_RightForeArm.rotation.z=.45;byName.Angel_RightHand.rotation.y=0;
     group.updateMatrixWorld(true);skeleton.update();
   }
-  const times=[0,.5,.85,1.2,1.55,1.9,2.25,2.6,3.1,6],angles=[-.12,-.12,.25,-.25,.25,-.25,.25,-.12,-.12,-.12];
-  const values=[];for(const a of angles){const q=new T.Quaternion().setFromEuler(new T.Euler(0,-.2,a));values.push(...q.toArray());}
+  const times=[0,.5,.85,1.2,1.55,1.9,2.25,2.6,3.1,6],angles=[-.04,-.04,.10,-.10,.10,-.10,.10,-.04,-.04,-.04];
+  const values=[];for(const a of angles){const q=new T.Quaternion().setFromEuler(new T.Euler(0,0,a));values.push(...q.toArray());}
   const wave=new T.AnimationClip('Seated_Gentle_Wave',6,[new T.QuaternionKeyframeTrack('Angel_RightHand.quaternion',times,values)]);
   group.animations=[wave];return {group,seat,clip:wave,bones:byName};
+}
+
+// Smooth influences along welded mesh edges, including duplicated UV seam vertices.
+// This removes the abrupt spatial weight cuts that used to crease elbows/cuffs.
+function softenJointWeights(geometry,indices,weights,boneCount){
+  const pos=geometry.getAttribute('position'),weld=new Map(),vertexToWeld=[],positions=[],neighbors=[],source=[];
+  for(let i=0;i<pos.count;i++){
+    const x=pos.getX(i),y=pos.getY(i),z=pos.getZ(i),key=[x,y,z].map(v=>Math.round(v*100000)).join(',');let id=weld.get(key);
+    if(id===undefined){id=positions.length;weld.set(key,id);positions.push([x,y,z]);neighbors.push(new Set());const row=new Float32Array(boneCount);for(let k=0;k<4;k++)row[indices[i*4+k]]+=weights[i*4+k];source.push(row);}
+    vertexToWeld.push(id);
+  }
+  const faces=geometry.index?.array;
+  const count=faces?faces.length:pos.count;
+  for(let i=0;i<count;i+=3){const a=vertexToWeld[faces?faces[i]:i],b=vertexToWeld[faces?faces[i+1]:i+1],c=vertexToWeld[faces?faces[i+2]:i+2];neighbors[a].add(b);neighbors[a].add(c);neighbors[b].add(a);neighbors[b].add(c);neighbors[c].add(a);neighbors[c].add(b);}
+  const movable=positions.map(([x,y,z])=>{const ax=Math.abs(x);return (y>.455&&y<.585&&ax>.12&&ax<.355&&z>-.12)||(y>.075&&y<.29&&ax<.14&&Math.abs(z)<.105);});
+  let current=source;
+  for(let iteration=0;iteration<10;iteration++){
+    const next=current.map((row,i)=>{if(!movable[i]||!neighbors[i].size)return row;const out=new Float32Array(boneCount);for(let b=0;b<boneCount;b++){let sum=0;for(const n of neighbors[i])sum+=current[n][b];out[b]=row[b]*.42+(sum/neighbors[i].size)*.58;}return out;});current=next;
+  }
+  const skinIndices=[],skinWeights=[];
+  for(let i=0;i<pos.count;i++){const row=current[vertexToWeld[i]],rank=Array.from(row,(weight,joint)=>({weight,joint})).filter(x=>x.weight>.00001).sort((a,b)=>b.weight-a.weight).slice(0,4);const total=rank.reduce((v,x)=>v+x.weight,0);for(let k=0;k<4;k++){skinIndices.push(rank[k]?.joint||0);skinWeights.push(rank[k]?rank[k].weight/total:0);}}
+  return {indices:skinIndices,weights:skinWeights};
 }

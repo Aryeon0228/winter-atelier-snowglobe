@@ -20,3 +20,7 @@ The rig is specific to the seated pose and wrist wave. Arbitrary retargeted moti
 ## Initial release checks
 
 The original release was inspected at desktop and 390 × 844 layouts. Public GitHub Pages loaded the assets and served the ornament ZIP. GitHub repository visibility was verified PUBLIC. The original 18 GLB files reported 0 validator errors. Blender failed at startup in Metal initialization, so no Blender execution is claimed.
+
+## Joint correction
+
+Reduced the previously excessive elbow rotations (about 89° / 66°) to about 26° / 17°, reduced wrist wave amplitude from ±14° to ±6°, and removed the opposing ankle rotation. Smoothed skin weights across welded mesh adjacency near arm and leg joints, keeping four normalized influences per vertex. Inspected front and three-quarter views at both extrema of the wave, then inspected the assembled scene. Re-exported the angel and full scene.
