@@ -7,12 +7,14 @@
 - 생성 서비스: [VARCO 3D](https://3d.varco.ai/), NC AI.
 - 생성 당시 무료 플랜의 CC BY 4.0 표기를 기준으로 출처를 명시합니다. [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 - 수정: 웹용 메시 간소화, 텍스처 크기·형식 최적화, 크기·위치 조정 및 조명·재질 설정.
-- `snowglobe.glb`는 위 모델을 포함한 조합 장면입니다.
+- `angel-seated-rigged.glb`: 원본 천사에 코드로 17개 관절과 스킨 가중치를 부여하고, 앉은 자세·치마 형태를 보정한 파생 에셋. 손인사 클립을 포함합니다.
+- `snowglobe.glb`는 위 모델과 리깅된 천사를 포함한 조합 장면입니다.
 
 ## Procedural assets and audio
 
 - `src/props.js`와 `docs/assets/props/`: Studio Aryeon 프로젝트에서 AI 코드 보조로 제작한 기하학 소품. 외부 에셋 스토어 모델을 사용하지 않았습니다.
 - `ornaments.zip`: 방울, 종, 선물상자, 리본, 받침대, 돔 및 선물상자 색 변형 GLB.
+- 겨울 실내 배경·창문·전구·환경 반사 맵·눈 결정·눈 더미도 절차적으로 제작했습니다. 외부 HDRI나 배경 사진을 사용하지 않았습니다.
 - 효과음: 브라우저 Web Audio 오실레이터로 합성. 음원 파일이나 VARCO Sound 생성물을 사용하지 않았습니다.
 - 서체: 운영체제 기본 서체. 외부 폰트 요청 없음.
 

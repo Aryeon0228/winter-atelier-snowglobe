@@ -11,5 +11,23 @@ export function createBauble(p=palettes.classic,index=0){const o=new T.Group();o
 export function createBell(p=palettes.classic){const o=new T.Group();o.name='Bell';const points=[[.34,0],[.39,.025],[.4,.07],[.33,.12],[.28,.32],[.25,.5],[.18,.62],[.06,.66],[0,.67],[0,.59],[.12,.58],[.20,.49],[.23,.31],[.29,.12],[.34,.06],[.34,0]].map(x=>new T.Vector2(...x));mesh(new T.LatheGeometry(points,32),mat(p.gold,.76,.24),o);mesh(new T.SphereGeometry(.09,16,12),mat(p.gold,.65,.23),o,[0,.015,0]);mesh(new T.CylinderGeometry(.018,.018,.25,8),mat(p.gold,.6,.3),o,[0,.18,0]);mesh(new T.TorusGeometry(.085,.025,8,20),mat(p.gold,.7,.25),o,[0,.73,0]);const b=bow(p.green,.75);b.position.set(0,.7,.19);o.add(b);return o;}
 export function createGift(p=palettes.classic,index=0){const o=new T.Group();o.name='GiftBox';const colors=[p.red,p.cream,p.green],ribbons=[p.cream,p.green,p.gold];const b=mat(colors[index%3],.04,.42),r=mat(ribbons[index%3],.15,.3);mesh(new RoundedBoxGeometry(.86,.72,.8,3,.05),b,o,[0,.36,0]);mesh(new RoundedBoxGeometry(.91,.12,.85,3,.035),b,o,[0,.76,0]);mesh(new RoundedBoxGeometry(.15,.85,.815,2,.013),r,o,[0,.405,0]);mesh(new RoundedBoxGeometry(.875,.85,.15,2,.013),r,o,[0,.405,0]);const knot=bow(ribbons[index%3],1.1);knot.rotation.x=-Math.PI/2;knot.position.set(0,.86,0);o.add(knot);return o;}
 export function createRibbon(p=palettes.classic){const o=new T.Group();o.name='SpiralRibbon';const vertices=[],uv=[],indices=[],segments=240,width=.065;const left=[],right=[];for(let i=0;i<=segments;i++){const t=i/segments,y=1.05+2.98*t,angle=-Math.PI/2+t*Math.PI*6,r=1.03*(1-t)+.23;const x=Math.cos(angle)*r,z=Math.sin(angle)*r;vertices.push(x,y-width,z,x,y+width,z);uv.push(0,t*6,1,t*6);left.push(new T.Vector3(x,y-width,z));right.push(new T.Vector3(x,y+width,z));if(i<segments){const a=i*2;indices.push(a,a+1,a+2,a+1,a+3,a+2);}}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(vertices,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();const m=mat(p.cream,.17,.33);m.side=T.DoubleSide;mesh(g,m,o);for(const points of [left,right])mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points),240,.008,5,false),mat(p.gold,.7,.25),o);return o;}
-export function createBase(p=palettes.classic){const o=new T.Group();o.name='SnowglobeBase';mesh(new T.CylinderGeometry(2.08,2.18,.3,96),mat(p.red,.12,.36),o,[0,.22,0]);mesh(new T.CylinderGeometry(2.13,2.16,.065,96),mat(p.gold,.75,.25),o,[0,.07,0]);mesh(new T.CylinderGeometry(2.04,2.12,.08,96),mat(p.gold,.72,.25),o,[0,.405,0]);mesh(new T.CylinderGeometry(1.99,2.04,.1,96),mat(p.cream,.02,.7),o,[0,.495,0]);return o;}
-export function createDome(){const o=new T.Group();o.name='GlassDome';const radius=2.65,centerY=2.35,theta=Math.acos((.55-centerY)/radius);const g=new T.SphereGeometry(radius,64,48,0,Math.PI*2,0,theta);const m=new T.MeshPhysicalMaterial({color:'#e8fbff',metalness:0,roughness:.06,transmission:.96,thickness:.035,ior:1.12,transparent:true,opacity:.22,side:T.FrontSide,depthWrite:false,envMapIntensity:.7});const dome=mesh(g,m,o,[0,centerY,0]);dome.castShadow=false;dome.receiveShadow=false;dome.renderOrder=3;return o;}
+export function createBase(p=palettes.classic){const o=new T.Group();o.name='SnowglobeBase';mesh(new T.CylinderGeometry(2.08,2.18,.3,96),mat(p.red,.12,.36),o,[0,.22,0]);mesh(new T.CylinderGeometry(2.13,2.16,.065,96),mat(p.gold,.75,.25),o,[0,.07,0]);mesh(new T.CylinderGeometry(2.04,2.12,.08,96),mat(p.gold,.72,.25),o,[0,.405,0]);mesh(new T.CylinderGeometry(1.99,2.04,.1,96),mat('#fffef8',0,.96),o,[0,.495,0]);o.add(createSnowdrifts());return o;}
+export function createDome(){
+  const o=new T.Group();o.name='GlassDome';const radius=2.65,centerY=2.35,theta=Math.acos((.55-centerY)/radius);
+  const g=new T.SphereGeometry(radius,96,72,0,Math.PI*2,0,theta);
+  const m=new T.MeshPhysicalMaterial({name:'Optical_Glass_IOR_1.5',color:'#ffffff',metalness:0,roughness:.009,transmission:1,thickness:.09,ior:1.5,dispersion:.18,attenuationColor:'#d6eee5',attenuationDistance:5,transparent:false,opacity:1,side:T.FrontSide,depthWrite:false,envMapIntensity:.95});
+  const dome=mesh(g,m,o,[0,centerY,0]);dome.castShadow=false;dome.receiveShadow=false;
+  // The rolled lip has real rounded geometry, with stronger grazing reflections.
+  const lip=mesh(new T.TorusGeometry(Math.sqrt(radius*radius-(.55-centerY)**2),.035,12,96),m,o,[0,.55,0]);lip.rotation.x=Math.PI/2;lip.castShadow=false;lip.receiveShadow=false;
+  return o;
+}
+
+export function createSnowdrifts(){
+  const group=new T.Group();group.name='Soft_Snowdrifts';
+  const material=new T.MeshPhysicalMaterial({name:'Powder_Snow',color:'#fffefb',roughness:1,metalness:0,sheen:.7,sheenColor:'#ffffff',sheenRoughness:1});
+  const sphere=new T.SphereGeometry(1,40,24);
+  const blanket=mesh(sphere,material,group,[0,.535,0]);blanket.scale.set(1.98,.095,1.98);
+  for(const [x,z,sx,sy,sz] of [[-1.45,.35,.50,.10,.64],[1.45,.28,.48,.12,.55],[.25,-1.48,.72,.12,.40],[-.95,-1.05,.67,.12,.52],[.55,.95,.54,.055,.57],[-.15,1.54,.54,.07,.32]]){
+    const drift=mesh(sphere,material,group,[x,.55,z]);drift.scale.set(sx,sy,sz);
+  }return group;
+}
