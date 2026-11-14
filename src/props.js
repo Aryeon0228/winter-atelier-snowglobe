@@ -31,3 +31,47 @@ export function createSnowdrifts(){
     const drift=mesh(sphere,material,group,[x,.55,z]);drift.scale.set(sx,sy,sz);
   }return group;
 }
+
+export function createSnowman(p=palettes.classic){
+  const o=new T.Group();o.name='Snowman';
+  const powder=new T.MeshPhysicalMaterial({color:'#fffaf1',roughness:.86,sheen:.4,sheenColor:'#ffffff'}),dark=mat('#302b29',0,.35),knit=mat(p.red,0,.86),blush=mat('#eaa19f',0,.95);
+  const ball=(r,m,pos,scale=[1,1,1])=>{const b=mesh(new T.SphereGeometry(r,32,24),m,o,pos);b.scale.set(...scale);return b;};
+  ball(.38,powder,[0,.35,0],[1,.92,.88]);
+  ball(.305,powder,[0,.88,0],[1,1,.94]);
+  for(const side of [-1,1]){
+    ball(.034,dark,[side*.112,.91,.266],[1,1.2,.55]);
+    ball(.009,powder,[side*.112-.008,.922,.286]);
+    ball(.056,blush,[side*.195,.835,.224],[1,.5,.12]);
+    ball(.09,knit,[side*.365,.48,.06],[.8,1,.8]);
+  }
+  const carrot=mesh(new T.ConeGeometry(.038,.10,20),mat('#df975e',0,.65),o,[0,.855,.311]);carrot.rotation.x=Math.PI/2;
+  const smile=new T.CatmullRomCurve3([new T.Vector3(-.045,.805,.28),new T.Vector3(0,.79,.29),new T.Vector3(.045,.805,.28)]);
+  mesh(new T.TubeGeometry(smile,12,.009,6,false),dark,o);
+  for(const y of [.32,.46])ball(.025,mat(p.gold,.4,.4),[0,y,.335],[1,1,.5]);
+  const scarf=mesh(new T.TorusGeometry(.267,.062,12,48),knit,o,[0,.665,0]);scarf.rotation.x=Math.PI/2;scarf.scale.set(1, .96,1);
+  for(const [x,y,angle] of [[-.105,.49,-.16],[.045,.53,.10]]){const tail=mesh(new RoundedBoxGeometry(.12,.28,.045,3,.022),knit,o,[x,y,.34]);tail.rotation.z=angle;}
+  const cap=mesh(new T.SphereGeometry(.31,32,16,0,Math.PI*2,0,Math.PI/2),knit,o,[0,1.055,0]);cap.scale.set(1,.75,.96);
+  const brim=mesh(new T.TorusGeometry(.294,.045,12,48),powder,o,[0,1.055,0]);brim.rotation.x=Math.PI/2;
+  ball(.085,powder,[-.03,1.31,0]);
+  return o;
+}
+
+export function createMailbox(p=palettes.classic){
+  const o=new T.Group();o.name='Christmas_Mailbox';const red=mat(p.red,.18,.37),gold=mat(p.gold,.7,.3),dark=mat('#33232a',0,.68),snow=mat('#fffaf1',0,.95);
+  mesh(new T.CylinderGeometry(.055,.075,.77,20),red,o,[0,.385,0]);
+  mesh(new T.CylinderGeometry(.17,.20,.055,32),gold,o,[0,.028,0]);
+  mesh(new RoundedBoxGeometry(.62,.46,.38,5,.09),red,o,[0,.96,0]);
+  // Slightly raised front panel, mail slot and small brass envelope emblem.
+  mesh(new RoundedBoxGeometry(.51,.35,.027,4,.06),gold,o,[0,.955,.193]);
+  mesh(new RoundedBoxGeometry(.475,.315,.028,4,.05),red,o,[0,.955,.212]);
+  mesh(new RoundedBoxGeometry(.31,.035,.012,3,.01),dark,o,[0,1.035,.233]);
+  const line=(points,r=.008)=>mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(v=>new T.Vector3(...v))),16,r,6,false),gold,o);
+  mesh(new RoundedBoxGeometry(.18,.115,.015,2,.012),mat(p.cream,0,.6),o,[0,.915,.239]);
+  line([[-.085,.96,.251],[0,.91,.253],[.085,.96,.251]],.006);
+  const latch=mesh(new T.SphereGeometry(.018,12,8),gold,o,[.172,.91,.242]);latch.scale.z=.5;
+  const snowcap=mesh(new T.SphereGeometry(1,32,16),snow,o,[0,1.188,0]);snowcap.scale.set(.32,.057,.207);
+  mesh(new T.CylinderGeometry(.012,.012,.25,12),gold,o,[.341,1.12,0]);
+  mesh(new RoundedBoxGeometry(.12,.085,.018,2,.008),red,o,[.39,1.22,0]);
+  for(const x of [-.15,0,.15]){const icicle=mesh(new T.SphereGeometry(1,12,8),snow,o,[x,1.16,.18]);icicle.scale.set(.033,.045,.025);}
+  return o;
+}

@@ -1,5 +1,15 @@
 # Validation
 
+## Snowman / mailbox / larger gifts update
+
+- Added procedural snowman and mailbox, including palette-dependent materials. Inspected isolated models and complete arrangement with an offline CPU raster preview; this excludes glass, environment and web post-processing.
+- Gift scales are now 0.4125 / 0.3375 / 0.285: exactly 3× the previous version. Shared layout constants drive both the web and downloadable GLB. Nine gifts remain in the asymmetric foreground cluster.
+- Updated complete GLB using glTF Transform, retaining transmission, volume, dispersion and sheen extensions. Verified one Snowman and one Christmas_Mailbox node, nine gifts and matching scales/positions.
+- Khronos validation: combined scene 0 errors / 1 tangent warning; snowman and mailbox each 0 errors / 0 warnings.
+- Production bundle built successfully. The browser connection was unavailable after the application update, so this revision has not been visually checked in the live browser. Previous browser checks below apply to earlier versions.
+- Snowman / mailbox interactions are intentionally not implemented yet; they are discussion candidates.
+
+
 ## Current larger tree / asymmetric gifts version
 
 - Removed the angel, rig, animation updates, wave control and angel download. Current combined GLB contains no angel nodes, skins or animations.

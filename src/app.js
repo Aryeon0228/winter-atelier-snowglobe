@@ -1,10 +1,11 @@
 import * as THREE from 'three';
+import {giftLayout,giftScales,characterLayout} from './scene-layout.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {GLTFExporter} from 'three/addons/exporters/GLTFExporter.js';
 import {createWinterEnvironment} from './environment.js';
 import {createCameraEffects} from './camera-effects.js';
-import {createBauble,createBell,createGift,createRibbon,createBase,createDome,palettes} from './props.js';
+import {createBauble,createBell,createGift,createRibbon,createBase,createDome,createSnowman,createMailbox,palettes} from './props.js';
 
 const $=s=>document.querySelector(s),stage=$('#stage'),canvas=$('#scene');
 let renderer;
@@ -32,8 +33,9 @@ function disposeGroup(group){while(group.children.length){const c=group.children
 function createSceneProps(){const p=palettes[paletteKey];disposeGroup(decor);disposeGroup(gifts);disposeGroup(scenery);disposeGroup(ribbons);base=createBase(p);scenery.add(base);ribbon=createRibbon(p);ribbon.position.set(-.43,0,-.25);ribbon.visible=$('#ribbon').checked;ribbons.add(ribbon);globe=createDome();globe.visible=true;scenery.add(globe);
   globe.traverse(o=>{if(o.isMesh){o.material.envMap=winter.environment;o.material.envMapIntensity=.95;}});
   // Seven gifts form a loose cluster on one side; two trail toward the front.
-  const giftLayout=[[1.02,.48,-.18],[1.28,.51,.36],[1.14,.72,-.44],[1.44,.72,.12],[.98,.92,.48],[1.30,.98,-.26],[1.05,1.16,.20],[.56,1.12,-.38],[.22,1.30,.30]];
-  giftLayout.forEach(([x,z,angle],i)=>{const gift=createGift(p,i%3);gift.name='Gift_'+(i+1);gift.position.set(x,.625,z);gift.scale.setScalar([.55,.45,.38][i%3]*.25);gift.rotation.y=angle;gifts.add(gift);});
+  giftLayout.forEach(([x,z,angle],i)=>{const gift=createGift(p,i%3);gift.name='Gift_'+(i+1);gift.position.set(x,.625,z);gift.scale.setScalar(giftScales[i%3]);gift.rotation.y=angle;gifts.add(gift);});
+  const snowman=createSnowman(p);snowman.position.set(...characterLayout.snowman.position);snowman.rotation.y=characterLayout.snowman.yaw;scenery.add(snowman);
+  const mailbox=createMailbox(p);mailbox.position.set(...characterLayout.mailbox.position);mailbox.rotation.y=characterLayout.mailbox.yaw;scenery.add(mailbox);
   for(const item of placements){const obj=item.type==='bell'?createBell(p):createBauble(p,item.variant);obj.scale.setScalar(item.type==='bell'?.32:.25);obj.position.set(item.x,item.y,item.z);obj.rotation.y=Math.atan2(item.x+.43,item.z+.25);obj.userData.ornament=true;decor.add(obj);}
   $('#count').textContent=placements.length;$('#palette-name').textContent=p.name;
 }

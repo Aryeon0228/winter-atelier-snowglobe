@@ -11,7 +11,7 @@
 ## Procedural assets and audio
 
 - `src/props.js`와 `docs/assets/props/`: Studio Aryeon 프로젝트에서 AI 코드 보조로 제작한 기하학 소품. 외부 에셋 스토어 모델을 사용하지 않았습니다.
-- `ornaments.zip`: 방울, 종, 선물상자, 리본, 받침대, 돔 및 선물상자 색 변형 GLB.
+- `ornaments.zip`: 방울, 종, 선물상자, 리본, 받침대, 돔, 눈사람, 우체통 및 선물상자 색 변형 GLB.
 - 겨울 실내 배경·창문·전구·환경 반사 맵·눈 결정·눈 더미도 절차적으로 제작했습니다. 외부 HDRI나 배경 사진을 사용하지 않았습니다.
 - 효과음: 브라우저 Web Audio 오실레이터로 합성. 음원 파일이나 VARCO Sound 생성물을 사용하지 않았습니다.
 - 서체: 운영체제 기본 서체. 외부 폰트 요청 없음.
