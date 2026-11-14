@@ -35,7 +35,7 @@ function createSceneProps(){const p=palettes[paletteKey];disposeGroup(decor);dis
 createSceneProps();
 function normalizeModel(model,height){model.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());const scale=height/size.y;model.scale.multiplyScalar(scale);model.position.set(-center.x*scale,-bounds.min.y*scale,-center.z*scale);model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;if(o.material){o.material.roughness=Math.max(o.material.roughness||.5,.55);o.material.metalness=0;}}});return model;}
 const loader=new GLTFLoader();
-const progress={tree:0,angel:0};function updateLoad(){const pct=Math.round((progress.tree+progress.angel)/2*100);$('#loading-progress').style.width=pct+'%';$('#loading-percent').textContent=pct+'%';}
+const progress={tree:0,angel:0};function updateLoad(){const pct=Math.min(100,Math.round((progress.tree+progress.angel)/2*100));$('#loading-progress').style.width=pct+'%';$('#loading-percent').textContent=pct+'%';}
 try{const [tree,angel]=await Promise.all(['tree','angel'].map(name=>loader.loadAsync('assets/'+name+'.glb',e=>{progress[name]=e.total?e.loaded/e.total:.5;updateLoad();})));treeMesh=normalizeModel(tree.scene,3.85);treeRoot.add(treeMesh);const angelModel=normalizeModel(angel.scene,1.75);angelRoot.add(angelModel);angelRoot.rotation.y=Math.PI*.25;ready=true;document.body.dataset.loaded='true';$('#loading').classList.add('done');$('#status').textContent='겨울을 꾸밀 준비가 되었어요';}
 catch(e){$('#loading').innerHTML='<strong>모델을 불러오지 못했어요.</strong><span>연결을 확인하고 새로고침해 주세요.</span><button onclick="location.reload()">다시 열기</button>';console.error(e);}
 

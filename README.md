@@ -2,7 +2,7 @@
 
 VARCO로 만든 트리와 아기 천사에 직접 구성한 3D 오너먼트를 더한 인터랙티브 스노우볼입니다. 생성형 AI 에셋을 선별·수정하고 웹에서 조작할 수 있는 장면으로 연결하는 제작 과정을 담았습니다.
 
-**[스노우볼 체험하기](https://Aryeon0228.github.io/winter-atelier-snowglobe/)** · **[소품 GLB 모음](docs/assets/ornaments.zip)** · **[완성 장면 GLB](docs/assets/snowglobe.glb)**
+**[스노우볼 체험하기](https://studio-penumbra.com/winter-atelier-snowglobe/)** · **[소품 GLB 모음](docs/assets/ornaments.zip)** · **[완성 장면 GLB](docs/assets/snowglobe.glb)**
 
 ![Winter Atelier 화면](docs/preview.jpg)
 

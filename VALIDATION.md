@@ -10,3 +10,5 @@
 - Production bundle built with esbuild. Dependency installation reported 0 vulnerabilities.
 
 Blender could not start in this environment due to Metal initialization failure. Unity import and Blender render are not claimed as validated. The optional Blender import helper has not been executed in Blender.
+
+Public deployment: https://studio-penumbra.com/winter-atelier-snowglobe/ loaded both models, accepted ornament additions and served ornaments.zip successfully. GitHub repository visibility verified PUBLIC.
