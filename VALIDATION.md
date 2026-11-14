@@ -12,3 +12,5 @@
 Blender could not start in this environment due to Metal initialization failure. Unity import and Blender render are not claimed as validated. The optional Blender import helper has not been executed in Blender.
 
 Public deployment: https://studio-penumbra.com/winter-atelier-snowglobe/ loaded both models, accepted ornament additions and served ornaments.zip successfully. GitHub repository visibility verified PUBLIC.
+
+Lighting revision: removed hemisphere and directional lights, added one warm spotlight, reduced exposure and environment reflection intensity, and darkened the viewer backdrop. Visually checked tree/angel visibility and verified no browser errors.

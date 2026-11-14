@@ -8,15 +8,17 @@ import {createBauble,createBell,createGift,createRibbon,createBase,createDome,pa
 const $=s=>document.querySelector(s),stage=$('#stage'),canvas=$('#scene');
 let renderer;
 try{renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:true});}catch(e){$('#loading').innerHTML='<strong>3D 화면을 열 수 없어요.</strong><span>WebGL을 지원하는 최신 브라우저에서 다시 열어주세요.</span>';throw e;}
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.18;
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.85;
 const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(37,1,.1,70);camera.position.set(7.2,5.1,10.5);
 const controls=new OrbitControls(camera,canvas);controls.target.set(0,2.45,0);controls.enableDamping=true;controls.dampingFactor=.07;controls.minDistance=7;controls.maxDistance=16;controls.maxPolarAngle=Math.PI*.51;controls.minPolarAngle=.25;controls.enablePan=false;controls.autoRotateSpeed=.45;
-const pmrem=new THREE.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;pmrem.dispose();
-scene.add(new THREE.HemisphereLight('#fff9eb','#bfbbb2',2.0));
-const key=new THREE.DirectionalLight('#fff3d7',3.2);key.position.set(-4,8,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-5,right:5,top:7,bottom:-4,near:.1,far:20});key.shadow.bias=-.0004;key.shadow.normalBias=.025;scene.add(key);
-const fill=new THREE.DirectionalLight('#d4ecff',1.5);fill.position.set(5,4,-4);scene.add(fill);
+const pmrem=new THREE.PMREMGenerator(renderer);scene.environment=pmrem.fromScene(new RoomEnvironment(),.04).texture;scene.environmentIntensity=.10;pmrem.dispose();
+// One warm spotlight; the dim environment is retained only for material reflections.
+const key=new THREE.SpotLight('#ffe4bd',220,0,Math.PI/5,.7,2);
+key.position.set(4,7,6);key.target.position.set(0,1.8,0);
+key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.camera.near=.5;key.shadow.camera.far=25;key.shadow.bias=-.0002;key.shadow.normalBias=.018;
+scene.add(key,key.target);
 const world=new THREE.Group();world.name='Winter_Atelier_Snowglobe';scene.add(world);
-const ground=new THREE.Mesh(new THREE.PlaneGeometry(30,30),new THREE.ShadowMaterial({color:'#80745c',opacity:.17}));ground.rotation.x=-Math.PI/2;ground.position.y=-.01;ground.receiveShadow=true;scene.add(ground);
+const ground=new THREE.Mesh(new THREE.PlaneGeometry(30,30),new THREE.ShadowMaterial({color:'#000000',opacity:.45}));ground.rotation.x=-Math.PI/2;ground.position.y=-.01;ground.receiveShadow=true;scene.add(ground);
 const treeRoot=new THREE.Group();treeRoot.name='VARCO_Tree';treeRoot.position.set(-.43,.55,-.25);world.add(treeRoot);
 const angelRoot=new THREE.Group();angelRoot.name='VARCO_Angel_Static';angelRoot.position.set(.85,.55,.85);world.add(angelRoot);
 const decor=new THREE.Group(),gifts=new THREE.Group(),scenery=new THREE.Group();world.add(decor,gifts,scenery);
