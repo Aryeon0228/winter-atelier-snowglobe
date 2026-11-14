@@ -3,12 +3,10 @@
 ## VARCO-generated assets
 
 - `docs/assets/tree.glb`: Studio Aryeon이 VARCO에서 생성하고 선별한 Christmas Tree. [생성 페이지](https://3d.varco.ai/studio/be1c0889-ead4-4a9e-84a3-01f014701262)
-- `docs/assets/angel.glb`: Studio Aryeon이 VARCO에서 생성하고 선별한 Christmas Angel. [생성 페이지](https://3d.varco.ai/myAssets/37aa63f9-d188-4982-9552-207b90397f10)
 - 생성 서비스: [VARCO 3D](https://3d.varco.ai/), NC AI.
 - 생성 당시 무료 플랜의 CC BY 4.0 표기를 기준으로 출처를 명시합니다. [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
 - 수정: 웹용 메시 간소화, 텍스처 크기·형식 최적화, 크기·위치 조정 및 조명·재질 설정.
-- `angel-seated-rigged.glb`: 원본 천사에 코드로 17개 관절과 스킨 가중치를 부여하고, 앉은 자세·치마 형태를 보정한 파생 에셋. 손인사 클립을 포함합니다.
-- `snowglobe.glb`는 위 모델과 리깅된 천사를 포함한 조합 장면입니다.
+- `snowglobe.glb`는 위 트리와 절차적 소품을 포함한 조합 장면입니다.
 
 ## Procedural assets and audio
 
