@@ -35,16 +35,6 @@ const treePivot=new THREE.Group();treePivot.name='Tree_Sway_Pivot';treePivot.pos
 const treeMotion=createTreeMotion(treePivot);
 const miniature=new THREE.Group();miniature.name='Tree_Assembly';miniature.scale.setScalar(.75);miniature.position.set(.3225,-.4125,.1875);treePivot.add(miniature);
 const treeRoot=new THREE.Group();treeRoot.name='VARCO_Tree';treeRoot.position.set(-.43,.55,-.25);miniature.add(treeRoot);
-// Project a label from just above the tree's star; it follows orbit and tree sway.
-const treeSourceLabel=$('#tree-source-label'),treeLabelPoint=new THREE.Vector3();
-function updateTreeSourceLabel(){
-  treeRoot.updateWorldMatrix(true,false);
-  treeLabelPoint.set(0,4.03,0).applyMatrix4(treeRoot.matrixWorld).project(camera);
-  const visible=ready&&treeLabelPoint.z>-1&&treeLabelPoint.z<1&&Math.abs(treeLabelPoint.x)<.94&&Math.abs(treeLabelPoint.y)<.84;
-  treeSourceLabel.hidden=!visible;
-  if(visible){treeSourceLabel.style.left=((treeLabelPoint.x+1)*50)+'%';treeSourceLabel.style.top=((1-treeLabelPoint.y)*50)+'%';}
-}
-
 const decor=new THREE.Group(),gifts=new THREE.Group(),scenery=new THREE.Group(),ribbons=new THREE.Group();miniature.add(decor,ribbons);world.add(gifts,scenery);
 gifts.name='Nine_Small_Gifts';
 const giftConfetti=createGiftConfetti(world);
@@ -115,7 +105,7 @@ document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{tool=b.datase
 $('#ribbon').onchange=()=>{ribbon.visible=$('#ribbon').checked;};
 $('#sound').onclick=async()=>{
   const button=$('#sound'),next=!sceneAudio.enabled;
-  const label=text=>{button.setAttribute('aria-label',text);button.title=text;};
+  const label=text=>{button.setAttribute('aria-label','VARCO Sound · '+text);button.title='VARCO Sound · '+text;};
   button.disabled=true;button.setAttribute('aria-busy','true');label(next?'소리 준비 중':'소리 끄는 중');
   try{const on=await sceneAudio.setEnabled(next);button.setAttribute('aria-pressed',String(on));label(on?'소리 끄기':'소리 켜기');if(on)sceneAudio.playBell();}
   catch(error){button.setAttribute('aria-pressed','false');label('소리 다시 켜기');toast('소리 파일을 불러오지 못했어요. 소리 버튼을 다시 눌러주세요.');console.error(error);}
@@ -156,4 +146,4 @@ canvas.addEventListener('pointerup',e=>{
 });
 function download(data,name,type){const blob=data instanceof Blob?data:new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 $('#export').onclick=async()=>{if(!ready)return;const btn=$('#export');btn.disabled=true;btn.textContent='3D 파일을 준비하고 있어요…';const exportRoot=world.clone(true);exportRoot.rotation.set(0,0,0);const exportedMailbox=exportRoot.getObjectByName('Christmas_Mailbox');if(exportedMailbox)applyMailboxPose(exportedMailbox);const exportedSnowman=exportRoot.getObjectByName('Snowman');if(exportedSnowman)applySnowmanPose(exportedSnowman);exportRoot.traverse(o=>{if(o.userData.interaction==='gift')applyGiftPose(o);if(o.name==='Tree_Sway_Pivot'||o.name==='Ornament_Pendulum')o.rotation.set(0,0,0);});const exportedPowder=exportRoot.getObjectByName('Snowman_Powder');if(exportedPowder)exportRoot.remove(exportedPowder);const exportedConfetti=exportRoot.getObjectByName('Gift_Confetti');if(exportedConfetti)exportRoot.remove(exportedConfetti);const exportedSnow=exportRoot.getObjectByName('Animated_Snow');if(exportedSnow)exportRoot.remove(exportedSnow);try{const exporter=new GLTFExporter(),result=await exporter.parseAsync(exportRoot,{binary:true,onlyVisible:true,maxTextureSize:2048});download(result,'Winter_Atelier_Snowglobe.glb','model/gltf-binary');toast('Blender·Unity용 GLB를 저장했어요');}catch(e){console.error(e);toast('내보내기에 실패했어요. 다시 시도해 주세요.');}finally{btn.disabled=false;btn.textContent='완성 스노우볼 GLB 내려받기 ↗';}};
-let previous=performance.now();function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previous)/1000,.04),t=now/1000;previous=now;treeMotion.update(dt);snowmanPowder.update(dt);snowmanMotion.update(dt);mailboxMotion.update(dt);giftConfetti.update(dt);giftMotion.update(dt);snowMat.uniforms.time.value=t;shakePower=Math.max(0,shakePower-dt*.24);world.rotation.z=Math.sin(t*22)*.035*shakePower;world.rotation.x=Math.cos(t*18)*.018*shakePower;for(let i=0;i<snowGeo.drawRange.count;i++){const j=i*3;snowPositions[j+1]-=dt*snowSpeeds[i]*(1+shakePower*4);snowPositions[j]+=Math.sin(t*.7+snowPhases[i])*dt*(.035+shakePower*.3);snowPositions[j+2]+=Math.cos(t*.6+snowPhases[i])*dt*(.035+shakePower*.3);const y=snowPositions[j+1],r=Math.hypot(snowPositions[j],snowPositions[j+2]),maxR=Math.sqrt(Math.max(0,snowRadius**2-(y-snowCenterY)**2));if(y<snowFloor||(y<snowCenterY&&r>maxR))spawnSnow(i,false);else if(r>maxR){snowPositions[j]*=maxR/r;snowPositions[j+2]*=maxR/r;}}snowGeo.attributes.position.needsUpdate=true;controls.update();updateTreeSourceLabel();cameraEffects.render(t);}requestAnimationFrame(animate);
+let previous=performance.now();function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previous)/1000,.04),t=now/1000;previous=now;treeMotion.update(dt);snowmanPowder.update(dt);snowmanMotion.update(dt);mailboxMotion.update(dt);giftConfetti.update(dt);giftMotion.update(dt);snowMat.uniforms.time.value=t;shakePower=Math.max(0,shakePower-dt*.24);world.rotation.z=Math.sin(t*22)*.035*shakePower;world.rotation.x=Math.cos(t*18)*.018*shakePower;for(let i=0;i<snowGeo.drawRange.count;i++){const j=i*3;snowPositions[j+1]-=dt*snowSpeeds[i]*(1+shakePower*4);snowPositions[j]+=Math.sin(t*.7+snowPhases[i])*dt*(.035+shakePower*.3);snowPositions[j+2]+=Math.cos(t*.6+snowPhases[i])*dt*(.035+shakePower*.3);const y=snowPositions[j+1],r=Math.hypot(snowPositions[j],snowPositions[j+2]),maxR=Math.sqrt(Math.max(0,snowRadius**2-(y-snowCenterY)**2));if(y<snowFloor||(y<snowCenterY&&r>maxR))spawnSnow(i,false);else if(r>maxR){snowPositions[j]*=maxR/r;snowPositions[j+2]*=maxR/r;}}snowGeo.attributes.position.needsUpdate=true;controls.update();cameraEffects.render(t);}requestAnimationFrame(animate);

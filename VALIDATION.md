@@ -1,3 +1,9 @@
+## Consolidated scene controls
+
+- Combined speaker state icon and VARCO SOUND credit into one upper-right toggle, retaining mute/loading/error accessibility states and one click target.
+- Removed the projected VARCO 3D label from the tree and its per-frame positioning. Added a fixed 44px information link at the scene lower-right leading to the existing production gallery, with accessible label and keyboard focus styling.
+- Production build and existing tests pass; source checked for removed label references. Browser visual review remains unavailable.
+
 ## Icon-only sound toggle and all-VARCO sound attribution
 
 - Moved sound toggle to the scene upper-right with a 56px high-contrast circular target (52px on mobile). Speaker waves / speaker X distinguish state without color alone. Dynamic aria-label/title, aria-pressed, busy indicator, keyboard focus and failed-load retry retained; no visible on/off wording.
