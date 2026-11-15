@@ -2,7 +2,7 @@
 
 ## Small tilted hat
 
-Replaced the snowman’s rounded cap with a pointed cone in a hat group at uniform scale 0.5, tilted 0.29 radians around its brim and offset onto the side of the head. Inspected the isolated model with the offline renderer. Rebuilt the web bundle, standalone model, full scene and ZIP. glTF validation: snowman 0 errors / 0 warnings; full scene 0 errors / 1 existing tangent warning.
+Replaced the snowman’s rounded cap with a pointed cone in a hat group at uniform scale 0.7 (increased from 0.5), tilted 0.29 radians around its brim and lowered to cover more of the head. Inspected the isolated model with the offline renderer. Rebuilt the web bundle, standalone model, full scene and ZIP. glTF validation: snowman 0 errors / 0 warnings; full scene 0 errors / 1 existing tangent warning.
 
 
 ## Simplified snowman
