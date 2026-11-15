@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {createSnowmanMotion,applySnowmanPose} from './snowman-motion.js';
 import {createTreeMotion,createHangingOrnament,suspensionHeight} from './tree-motion.js';
 import {giftLayout,giftScales,characterLayout} from './scene-layout.js';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
@@ -28,6 +29,7 @@ const miniature=new THREE.Group();miniature.name='Tree_Assembly';miniature.scale
 const treeRoot=new THREE.Group();treeRoot.name='VARCO_Tree';treeRoot.position.set(-.43,.55,-.25);miniature.add(treeRoot);
 const decor=new THREE.Group(),gifts=new THREE.Group(),scenery=new THREE.Group(),ribbons=new THREE.Group();miniature.add(decor,ribbons);world.add(gifts,scenery);
 gifts.name='Nine_Small_Gifts';
+const snowmanMotion=createSnowmanMotion();let snowman=null;
 let paletteKey='classic',tool='bauble',treeMesh=null,ready=false,muted=true,shakePower=0,globe=null,ribbon=null,base=null;
 const initialDecor=[];
 for(let tier=0;tier<4;tier++){const y=[1.25,1.97,2.68,3.35][tier],r=[1.05,.84,.61,.38][tier];const count=[5,4,4,3][tier];for(let k=0;k<count;k++){const a=k/count*Math.PI*2+tier*.53;initialDecor.push({type:(k+tier)%4===0?'bell':'bauble',x:-.43+Math.sin(a)*r,y,z:-.25+Math.cos(a)*r,variant:(k+tier)%3});}}
@@ -37,7 +39,7 @@ function createSceneProps(){const p=palettes[paletteKey];disposeGroup(decor);dis
   globe.traverse(o=>{if(o.isMesh){o.material.envMap=winter.environment;o.material.envMapIntensity=.95;}});
   // Seven gifts form a loose cluster on one side; two trail toward the front.
   giftLayout.forEach(([x,z,angle],i)=>{const gift=createGift(p,i%3);gift.name='Gift_'+(i+1);gift.position.set(x,.625,z);gift.scale.setScalar(giftScales[i%3]);gift.rotation.y=angle;gifts.add(gift);});
-  const snowman=createSnowman(p);snowman.position.set(...characterLayout.snowman.position);snowman.rotation.y=characterLayout.snowman.yaw;scenery.add(snowman);
+  snowman=createSnowman(p);snowman.position.set(...characterLayout.snowman.position);snowman.rotation.y=characterLayout.snowman.yaw;scenery.add(snowman);snowmanMotion.bind(snowman);
   const mailbox=createMailbox(p);mailbox.position.set(...characterLayout.mailbox.position);mailbox.rotation.y=characterLayout.mailbox.yaw;scenery.add(mailbox);
   treeMotion.clearBindings();for(const item of placements)addDecoration(item);
   $('#count').textContent=placements.length;$('#palette-name').textContent=p.name;
@@ -97,10 +99,26 @@ $('#reset-view').onclick=()=>{camera.position.set(7.2,5.1,10.5);controls.target.
 $('#undo').onclick=()=>{if(placements.length>initialDecor.length){placements.pop();createSceneProps();toast('마지막 장식을 지웠어요');}else toast('추가한 장식이 없어요');};
 $('#reset-decor').onclick=()=>{placements=initialDecor.map(o=>({...o}));createSceneProps();treeMotion.reset();toast('처음 장식으로 되돌렸어요');};
 $('#add-ornament').onclick=()=>{if(!ready)return;if(placements.length>=40){toast('장식은 40개까지 달 수 있어요');return;}const i=placements.length-initialDecor.length,y=1.4+(i%4)*.55,r=1.0-(y-.8)*.24,a=.2+(i%7)*.65;placeDecoration({type:tool,x:-.43+Math.sin(a)*r,y,z:-.25+Math.cos(a)*r,variant:i%3});toast('장식이 딸랑, 트리도 살랑!');};
+function surpriseSnowman(){if(snowmanMotion.jump()){chime();toast('깜짝! 모자까지 폴짝 뛰었어요');}}
+$('#snowman-jump').onclick=surpriseSnowman;
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let pointerDown=null;
-canvas.addEventListener('pointerdown',e=>{pointerDown={x:e.clientX,y:e.clientY};});
-canvas.addEventListener('pointerup',e=>{if(!ready||!pointerDown||Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)>6)return;pointerDown=null;if(placements.length>=40){toast('장식은 40개까지 달 수 있어요');return;}const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);world.updateMatrixWorld(true);raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObject(treeMesh,true)[0];if(!hit)return;const q=miniature.worldToLocal(hit.point.clone());if(q.y<1||q.y>4.05)return;const out=new THREE.Vector3(q.x+.43,0,q.z+.25).normalize();q.addScaledVector(out,.14);q.y-=suspensionHeight(tool)*(tool==='bell'?.32:.25);placeDecoration({type:tool,x:q.x,y:q.y,z:q.z,variant:placements.length%3});toast('장식이 딸랑, 트리도 살랑!');});
+canvas.addEventListener('pointerdown',e=>{if(e.isPrimary===false||e.button!==0){pointerDown=null;return;}pointerDown={x:e.clientX,y:e.clientY,id:e.pointerId,moved:false};});
+canvas.addEventListener('pointermove',e=>{if(pointerDown&&Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)>6)pointerDown.moved=true;});
+canvas.addEventListener('pointercancel',()=>{pointerDown=null;});
+canvas.addEventListener('pointerup',e=>{
+  const down=pointerDown;pointerDown=null;
+  if(!ready||!down||down.id!==e.pointerId||down.moved||Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)return;
+  const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);world.updateMatrixWorld(true);raycaster.setFromCamera(pointer,camera);
+  const hit=raycaster.intersectObjects([snowman,treeMesh,gifts],true)[0];if(!hit)return;
+  let target=hit.object;while(target&&target!==snowman&&target!==treeMesh)target=target.parent;
+  if(target===snowman){surpriseSnowman();return;}
+  if(target!==treeMesh)return;
+  if(placements.length>=40){toast('장식은 40개까지 달 수 있어요');return;}
+  const q=miniature.worldToLocal(hit.point.clone());if(q.y<1||q.y>4.05)return;
+  const out=new THREE.Vector3(q.x+.43,0,q.z+.25).normalize();q.addScaledVector(out,.14);q.y-=suspensionHeight(tool)*(tool==='bell'?.32:.25);
+  placeDecoration({type:tool,x:q.x,y:q.y,z:q.z,variant:placements.length%3});toast('장식이 딸랑, 트리도 살랑!');
+});
 function download(data,name,type){const blob=data instanceof Blob?data:new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 $('#capture').onclick=()=>{cameraEffects.render(performance.now()/1000);canvas.toBlob(blob=>{if(blob)download(blob,'Winter_Atelier_Snowglobe.png','image/png');});toast('현재 모습을 PNG로 저장했어요');};
-$('#export').onclick=async()=>{if(!ready)return;const btn=$('#export');btn.disabled=true;btn.textContent='3D 파일을 준비하고 있어요…';const exportRoot=world.clone(true);exportRoot.rotation.set(0,0,0);exportRoot.traverse(o=>{if(o.name==='Tree_Sway_Pivot'||o.name==='Ornament_Pendulum')o.rotation.set(0,0,0);});const exportedSnow=exportRoot.getObjectByName('Animated_Snow');if(exportedSnow)exportRoot.remove(exportedSnow);try{const exporter=new GLTFExporter(),result=await exporter.parseAsync(exportRoot,{binary:true,onlyVisible:true,maxTextureSize:2048});download(result,'Winter_Atelier_Snowglobe.glb','model/gltf-binary');toast('Blender·Unity용 GLB를 저장했어요');}catch(e){console.error(e);toast('내보내기에 실패했어요. 다시 시도해 주세요.');}finally{btn.disabled=false;btn.textContent='완성 스노우볼 GLB 내려받기 ↗';}};
-let previous=performance.now();function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previous)/1000,.04),t=now/1000;previous=now;treeMotion.update(dt);snowMat.uniforms.time.value=t;shakePower=Math.max(0,shakePower-dt*.24);world.rotation.z=Math.sin(t*22)*.035*shakePower;world.rotation.x=Math.cos(t*18)*.018*shakePower;for(let i=0;i<snowGeo.drawRange.count;i++){const j=i*3;snowPositions[j+1]-=dt*snowSpeeds[i]*(1+shakePower*4);snowPositions[j]+=Math.sin(t*.7+snowPhases[i])*dt*(.035+shakePower*.3);snowPositions[j+2]+=Math.cos(t*.6+snowPhases[i])*dt*(.035+shakePower*.3);const y=snowPositions[j+1],r=Math.hypot(snowPositions[j],snowPositions[j+2]),maxR=Math.sqrt(Math.max(0,snowRadius**2-(y-snowCenterY)**2));if(y<snowFloor||(y<snowCenterY&&r>maxR))spawnSnow(i,false);else if(r>maxR){snowPositions[j]*=maxR/r;snowPositions[j+2]*=maxR/r;}}snowGeo.attributes.position.needsUpdate=true;controls.update();cameraEffects.render(t);}requestAnimationFrame(animate);
+$('#export').onclick=async()=>{if(!ready)return;const btn=$('#export');btn.disabled=true;btn.textContent='3D 파일을 준비하고 있어요…';const exportRoot=world.clone(true);exportRoot.rotation.set(0,0,0);const exportedSnowman=exportRoot.getObjectByName('Snowman');if(exportedSnowman)applySnowmanPose(exportedSnowman);exportRoot.traverse(o=>{if(o.name==='Tree_Sway_Pivot'||o.name==='Ornament_Pendulum')o.rotation.set(0,0,0);});const exportedSnow=exportRoot.getObjectByName('Animated_Snow');if(exportedSnow)exportRoot.remove(exportedSnow);try{const exporter=new GLTFExporter(),result=await exporter.parseAsync(exportRoot,{binary:true,onlyVisible:true,maxTextureSize:2048});download(result,'Winter_Atelier_Snowglobe.glb','model/gltf-binary');toast('Blender·Unity용 GLB를 저장했어요');}catch(e){console.error(e);toast('내보내기에 실패했어요. 다시 시도해 주세요.');}finally{btn.disabled=false;btn.textContent='완성 스노우볼 GLB 내려받기 ↗';}};
+let previous=performance.now();function animate(now){requestAnimationFrame(animate);const dt=Math.min((now-previous)/1000,.04),t=now/1000;previous=now;treeMotion.update(dt);snowmanMotion.update(dt);snowMat.uniforms.time.value=t;shakePower=Math.max(0,shakePower-dt*.24);world.rotation.z=Math.sin(t*22)*.035*shakePower;world.rotation.x=Math.cos(t*18)*.018*shakePower;for(let i=0;i<snowGeo.drawRange.count;i++){const j=i*3;snowPositions[j+1]-=dt*snowSpeeds[i]*(1+shakePower*4);snowPositions[j]+=Math.sin(t*.7+snowPhases[i])*dt*(.035+shakePower*.3);snowPositions[j+2]+=Math.cos(t*.6+snowPhases[i])*dt*(.035+shakePower*.3);const y=snowPositions[j+1],r=Math.hypot(snowPositions[j],snowPositions[j+2]),maxR=Math.sqrt(Math.max(0,snowRadius**2-(y-snowCenterY)**2));if(y<snowFloor||(y<snowCenterY&&r>maxR))spawnSnow(i,false);else if(r>maxR){snowPositions[j]*=maxR/r;snowPositions[j+2]*=maxR/r;}}snowGeo.attributes.position.needsUpdate=true;controls.update();cameraEffects.render(t);}requestAnimationFrame(animate);

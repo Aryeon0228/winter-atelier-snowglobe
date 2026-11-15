@@ -5,3 +5,5 @@
 #stage{background:radial-gradient(ellipse at 45% 35%,#35413d 0%,#222c29 55%,#141c1a 100%);border-color:#36423c}.scene-label{color:#c2cabe}.scene-label small{color:#8e9e90}.stage-bottom{color:#b1bfae}.stage-ornament{color:#bba26d;opacity:.45}
 
 .camera-controls{border-top:1px solid var(--line);padding:15px 0}.camera-controls summary{cursor:pointer;font-size:12px;color:var(--ink)}.camera-controls summary span{float:right;font-size:8px;color:var(--muted);letter-spacing:1px}.camera-controls .range-heading{margin-top:20px}.camera-controls input[type=range]{width:100%}.camera-controls .switch-row{margin-top:20px}
+
+.snowman-action{width:100%;margin-top:10px;padding:10px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);font-size:11px}.snowman-action:hover{background:#eef0e4}

@@ -34,18 +34,20 @@ export function createSnowdrifts(){
 
 export function createSnowman(p=palettes.classic){
   const o=new T.Group();o.name='Snowman';
+  const body=new T.Group();body.name='Snowman_Body';o.add(body);
+  const head=new T.Group();head.name='Snowman_Head';head.position.y=.88;o.add(head);
   const powder=new T.MeshPhysicalMaterial({color:'#fffaf1',roughness:.86,sheen:.4,sheenColor:'#ffffff'}),dark=mat('#302b29',0,.35),knit=mat(p.red,0,.86);
-  const ball=(r,m,pos,scale=[1,1,1])=>{const b=mesh(new T.SphereGeometry(r,32,24),m,o,pos);b.scale.set(...scale);return b;};
-  ball(.38,powder,[0,.35,0],[1,.92,.88]);
-  ball(.305,powder,[0,.88,0],[1,1,.94]);
+  const ball=(r,m,parent,pos,scale=[1,1,1])=>{const b=mesh(new T.SphereGeometry(r,32,24),m,parent,pos);b.scale.set(...scale);return b;};
+  ball(.38,powder,body,[0,.35,0],[1,.92,.88]);
+  ball(.305,powder,head,[0,0,0],[1,1,.94]);
   for(const side of [-1,1]){
-    ball(.034,dark,[side*.112,.91,.266],[1,1.2,.55]);
-    ball(.009,powder,[side*.112-.008,.922,.286]);
+    const eye=new T.Group();eye.name=side<0?'Snowman_Eye_L':'Snowman_Eye_R';eye.position.set(side*.112,.03,.266);head.add(eye);
+    ball(.034,dark,eye,[0,0,0],[1,1.2,.55]);
+    ball(.009,powder,eye,[-.008,.012,.02]);
   }
-  for(const y of [.32,.46])ball(.025,mat(p.gold,.4,.4),[0,y,.335],[1,1,.5]);
-  const scarf=mesh(new T.TorusGeometry(.267,.062,12,48),knit,o,[0,.665,0]);scarf.rotation.x=Math.PI/2;scarf.scale.set(1, .96,1);
-  for(const [x,y,angle] of [[-.105,.49,-.16],[.045,.53,.10]]){const tail=mesh(new RoundedBoxGeometry(.12,.28,.045,3,.022),knit,o,[x,y,.34]);tail.rotation.z=angle;}
-  // Seventy-percent pointed hat, tilted around the brim and seated on the head.
+  for(const y of [.32,.46])ball(.025,mat(p.gold,.4,.4),body,[0,y,.335],[1,1,.5]);
+  const scarf=mesh(new T.TorusGeometry(.267,.062,12,48),knit,body,[0,.665,0]);scarf.rotation.x=Math.PI/2;scarf.scale.set(1,.96,1);
+  for(const [x,y,angle] of [[-.105,.49,-.16],[.045,.53,.10]]){const tail=mesh(new RoundedBoxGeometry(.12,.28,.045,3,.022),knit,body,[x,y,.34]);tail.rotation.z=angle;}
   const hat=new T.Group();hat.name='Snowman_Pointy_Hat';hat.scale.setScalar(.7);hat.position.set(-.055,1.075,0);hat.rotation.z=.29;o.add(hat);
   mesh(new T.ConeGeometry(.294,.38,48),knit,hat,[0,.19,0]);
   const brim=mesh(new T.TorusGeometry(.294,.045,12,48),powder,hat);brim.rotation.x=Math.PI/2;

@@ -1,5 +1,15 @@
 # Validation
 
+## Snowman click jump
+
+- Split the existing model into body (with scarf), head (with eyes) and independent tilted hat without changing its resting appearance.
+- A 1.6-second reaction adds anticipation/squash, jump, head and hat separation, staggered landing and settling. Eyes widen while surprised. Repeated clicks during a jump do not restart it. Palette changes rebind the current pose to the replacement model.
+- Snowman ray hits are handled before the tree’s ornament limit; camera drags and cancelled/multiple-pointer gestures do not trigger clicks. Added a keyboard-accessible button for the same action.
+- Seven automated tests pass, covering this action and existing tree motion: visible separation, ground clearance, ordered landing, finite transforms, exact rest restoration, palette rebind, repeated clicks and frame-rate consistency.
+- Inspected a 25-frame offline sequence generated with the same model and pose function. This is not a live-browser recording; the browser connection remains unavailable.
+- Standalone and combined GLBs were rebuilt and validated: 0 errors; combined scene retains one tangent warning. Web export restores the cloned snowman to rest without altering the live pose. Animation is not baked into GLB clips.
+
+
 ## Small tilted hat
 
 Replaced the snowman’s rounded cap with a pointed cone in a hat group at uniform scale 0.7 (increased from 0.5), tilted 0.29 radians around its brim and lowered to cover more of the head. Inspected the isolated model with the offline renderer. Rebuilt the web bundle, standalone model, full scene and ZIP. glTF validation: snowman 0 errors / 0 warnings; full scene 0 errors / 1 existing tangent warning.
