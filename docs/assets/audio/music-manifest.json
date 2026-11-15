@@ -1,0 +1,19 @@
+{
+  "source_filename": "Winter Snow Globe.wav",
+  "source_sha256": "852e826753473a593991c8cbe361d2e23f8ff223d7b45f549a54cf0d3ccf613d",
+  "source_credit": "User-provided background music; generation service and prompt unrecorded.",
+  "file": "winter-snow-globe-42s.mp3",
+  "download_file": "winter-snow-globe-42s.wav",
+  "duration_seconds": 42.0,
+  "source_segment_seconds": [
+    0,
+    42
+  ],
+  "editing": "Retain stereo; end in the quieter passage after 41 seconds; 40 ms fade-in and 1 s fade-out. Quiet pause between repetitions is intentional.",
+  "playback_gain": 0.16,
+  "duck_gain_while_bell_active": 0.7,
+  "rms": 0.121306,
+  "peak_dbfs": -1.23,
+  "sha256": "ff64075aae1116d0667acddcba1fd92f332585061fd6e7d98854e614cbaecb35",
+  "wav_sha256": "199c395b5367fb2e6f1bb7ce58a6bfea650158e3f82537622ed47b4736e8dfcc"
+}

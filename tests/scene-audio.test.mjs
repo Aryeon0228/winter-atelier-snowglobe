@@ -19,12 +19,12 @@ function fixture(fetcher){
  return {audio,context,sources,get fetchCount(){return fetchCount;}};
 }
 test('real bell variants alternate without immediate repeats; mute stops voices and cached audio is reused',async()=>{
- const f=fixture();assert.equal(f.audio.playBell(),false);assert.equal(f.fetchCount,0);assert.equal(await f.audio.setEnabled(true),true);assert.equal(f.fetchCount,3);
+ const f=fixture();assert.equal(f.audio.playBell(),false);assert.equal(f.fetchCount,0);assert.equal(await f.audio.setEnabled(true),true);assert.equal(f.fetchCount,4);
  for(let i=0;i<6;i++){f.context.currentTime=i*.2;assert.equal(f.audio.playBell(),true);assert.equal(f.sources.at(-1).buffer.id,i%2);assert.equal(f.audio.playBell(),false,'rapid clicks are throttled without advancing variation');}
- assert.ok(f.sources.filter(s=>!s.stopped).length<=3);await f.audio.setEnabled(false);assert.ok(f.sources.every(s=>s.stopped));assert.equal(f.audio.playBell(),false);await f.audio.setEnabled(true);assert.equal(f.fetchCount,3);assert.equal(f.audio.playBell(),true);assert.equal(f.sources.at(-1).buffer.id,0);
+ assert.ok(f.sources.filter(s=>!s.stopped&&s.buffer.id<2).length<=3);await f.audio.setEnabled(false);assert.ok(f.sources.every(s=>s.stopped));assert.equal(f.audio.playBell(),false);await f.audio.setEnabled(true);assert.equal(f.fetchCount,4);assert.equal(f.audio.playBell(),true);assert.equal(f.sources.at(-1).buffer.id,0);
 });
 test('muting during loading prevents late playback, and failed downloads can be retried',async()=>{
- const pending=[];const f=fixture(()=>new Promise(resolve=>pending.push(resolve)));const enabling=f.audio.setEnabled(true);await Promise.resolve();assert.equal(pending.length,3);await f.audio.setEnabled(false);pending.forEach((resolve,i)=>resolve({ok:true,arrayBuffer:async()=>Uint8Array.of(i).buffer}));assert.equal(await enabling,false);assert.equal(f.audio.enabled,false);assert.equal(f.audio.playBell(),false);assert.equal(f.sources.length,0);
+ const pending=[];const f=fixture(()=>new Promise(resolve=>pending.push(resolve)));const enabling=f.audio.setEnabled(true);await Promise.resolve();assert.equal(pending.length,4);await f.audio.setEnabled(false);pending.forEach((resolve,i)=>resolve({ok:true,arrayBuffer:async()=>Uint8Array.of(i).buffer}));assert.equal(await enabling,false);assert.equal(f.audio.enabled,false);assert.equal(f.audio.playBell(),false);assert.equal(f.sources.length,0);
  let fail=true;const g=fixture(async()=>({ok:!fail,arrayBuffer:async()=>Uint8Array.of(0).buffer}));await assert.rejects(g.audio.setEnabled(true));assert.equal(g.audio.enabled,false);fail=false;assert.equal(await g.audio.setEnabled(true),true);
 });
 for(const type of ['bauble','bell'])test(`ray hits a nested ${type} mesh and resolves its existing hook without adding an ornament`,()=>{
@@ -41,4 +41,13 @@ test('rustle stays quieter, ducks under every bell voice, recovers smoothly and 
  bellB.onended();assert.equal(bus.gain.value,1);assert.equal(bus.gain.targets.at(-1).constant,.16);
  f.context.currentTime=.7;f.audio.playBell();assert.equal(bus.gain.value,.55);assert.equal(second.output.gain.value,.55,'ducking changes only the background bus, not the clip gain');
  await f.audio.setEnabled(false);assert.equal(second.stopped,true);assert.equal(f.audio.playRustle(),false);
+});
+
+test('music starts only after enabling, loops quietly once, ducks for bells and stops with mute',async()=>{
+ const f=fixture();assert.equal(f.sources.length,0);await f.audio.setEnabled(true);
+ const music=f.sources[0],bus=music.output.output;assert.equal(music.buffer.id,3);assert.equal(music.loop,true);assert.equal(music.loopEnd,42);assert.equal(music.output.gain.value,.16);assert.equal(bus.gain.value,1);
+ f.audio.playBell();const bell=f.sources.at(-1);assert.equal(bus.gain.value,.7);assert.equal(bell.output.gain.value,.65);bell.onended();assert.equal(bus.gain.value,1);
+ await f.audio.setEnabled(true);assert.equal(music.stopped,true);assert.equal(f.sources.filter(s=>s.buffer.id===3&&!s.stopped).length,1);
+ await f.audio.setEnabled(false);assert.equal(f.sources.filter(s=>s.buffer.id===3&&!s.stopped).length,0);
+ await f.audio.setEnabled(true);assert.equal(f.fetchCount,4);assert.equal(f.sources.at(-1).buffer.id,3);
 });

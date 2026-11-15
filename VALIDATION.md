@@ -1,3 +1,10 @@
+## Winter Snow Globe background music
+
+- Source is 159.11 seconds, stereo 48 kHz MP3 despite its WAV filename. Preserved the first 42 seconds; PCM analysis shows the level falls after 41 seconds (-23.9 dBFS at 41.00–41.25, -31.8 at 41.75–42.00). Applied 40 ms fade-in and 1-second fade-out ending at 42.00. This is a gentle fade/pause loop, not a verified beat-matched seamless loop.
+- Stereo PCM16 WAV download and 160 kbps MP3 runtime asset. WAV RMS 0.121306, peak -1.23 dBFS, zero first/last stereo frames and no clipping. Original remains unmodified and is not published.
+- Music starts only when sound is enabled, uses gain 0.16 and loops with end at 42 seconds. A separate music bus ducks to 0.7 while bells are active; bell gain is unchanged. Muting stops the loop; re-enabling starts one fresh loop using cached buffers.
+- 27 tests pass including music loop/mute/re-enable, bell ducking, loading cancellation and existing interactions. Production build succeeds. Subjective listening and actual browser playback are not verified in this environment.
+
 ## Quiet tree rustle with bell ducking
 
 - Decoded user-provided pine_rustle(GEN_3).wav (MP3 bytes) to mono 48 kHz PCM. Preserved its 1.48-second duration, filtered below 80 Hz / above 4.8 kHz, reduced amplitude to 0.75, and added 15 ms / 180 ms fades. Output RMS 0.024396, peak -9.61 dBFS; endpoints zero, no clipping.

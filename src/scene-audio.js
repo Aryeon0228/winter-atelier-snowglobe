@@ -1,14 +1,26 @@
 import bellManifest from '../docs/assets/audio/bell-manifest.json' with {type:'json'};
 import rustleManifest from '../docs/assets/audio/rustle-manifest.json' with {type:'json'};
+import musicManifest from '../docs/assets/audio/music-manifest.json' with {type:'json'};
 export const BELL_URLS=bellManifest.variants.map(v=>'assets/audio/'+v.file+'?v='+v.sha256.slice(0,10));
 export const RUSTLE_URL='assets/audio/'+rustleManifest.file+'?v='+rustleManifest.sha256.slice(0,10);
-export const AUDIO_URLS=[...BELL_URLS,RUSTLE_URL];
+export const MUSIC_URL='assets/audio/'+musicManifest.file+'?v='+musicManifest.sha256.slice(0,10);
+export const AUDIO_URLS=[...BELL_URLS,RUSTLE_URL,MUSIC_URL];
 
 export function createSceneAudio({contextFactory=()=>new (globalThis.AudioContext||globalThis.webkitAudioContext)(),fetcher=(...args)=>fetch(...args),random=Math.random}={}){
-  let context=null,master=null,rustleBus=null,enabled=false,revision=0,buffers=null,loading=null,lastVariant=-1,lastBellTime=-Infinity,lastRustleTime=-Infinity;
+  let context=null,master=null,rustleBus=null,musicBus=null,enabled=false,revision=0,buffers=null,loading=null,lastVariant=-1,lastBellTime=-Infinity,lastRustleTime=-Infinity;
   const voices=new Set();
-  function ensureContext(){if(!context){context=contextFactory();master=context.createGain();master.gain.value=0;master.connect(context.destination);rustleBus=context.createGain();rustleBus.gain.value=1;rustleBus.connect(master);}return context;}
-  function updateDucking(){if(rustleBus)rustleBus.gain.setTargetAtTime([...voices].some(v=>v.kind==='bell')?rustleManifest.duck_gain_while_bell_active:1,context.currentTime,[...voices].some(v=>v.kind==='bell')?.012:.16);}
+  function ensureContext(){if(!context){context=contextFactory();master=context.createGain();master.gain.value=0;master.connect(context.destination);rustleBus=context.createGain();rustleBus.gain.value=1;rustleBus.connect(master);musicBus=context.createGain();musicBus.gain.value=1;musicBus.connect(master);}return context;}
+  function updateDucking(){
+    const bellActive=[...voices].some(v=>v.kind==='bell');
+    if(rustleBus)rustleBus.gain.setTargetAtTime(bellActive?rustleManifest.duck_gain_while_bell_active:1,context.currentTime,bellActive?.012:.16);
+    if(musicBus)musicBus.gain.setTargetAtTime(bellActive?musicManifest.duck_gain_while_bell_active:1,context.currentTime,bellActive?.04:.3);
+  }
+  function startMusic(){
+    for(const voice of [...voices].filter(v=>v.kind==='music'))stopVoice(voice);
+    const source=context.createBufferSource(),gain=context.createGain();
+    source.buffer=buffers[3];source.loop=true;source.loopStart=0;source.loopEnd=musicManifest.duration_seconds;
+    gain.gain.value=musicManifest.playback_gain;source.connect(gain);gain.connect(musicBus);track(source,gain,'music');updateDucking();source.start(context.currentTime);
+  }
   function track(source,gain,kind){const voice={source,gain,kind};voices.add(voice);source.onended=()=>{source.disconnect();gain.disconnect();voices.delete(voice);if(kind==='bell')updateDucking();};return voice;}
   function stopVoice(voice){try{voice.source.stop();}catch{}voice.source.disconnect();voice.gain.disconnect();voices.delete(voice);if(voice.kind==='bell')updateDucking();}
   function load(){
@@ -25,7 +37,7 @@ export function createSceneAudio({contextFactory=()=>new (globalThis.AudioContex
         // Resume synchronously from the sound-button gesture, before waiting on downloads.
         await ctx.resume();if(token!==revision)return false;
         await load();if(token!==revision)return false;
-        master.gain.value=.7;enabled=true;lastBellTime=lastRustleTime=-Infinity;return true;
+        master.gain.value=.7;enabled=true;lastBellTime=lastRustleTime=-Infinity;startMusic();return true;
       }catch(error){if(token===revision){enabled=false;if(master)master.gain.value=0;}throw error;}
     },
     playBell(){
