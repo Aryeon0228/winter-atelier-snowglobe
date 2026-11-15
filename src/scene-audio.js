@@ -69,15 +69,8 @@ export function createSceneAudio({contextFactory=()=>new (globalThis.AudioContex
       }
       const source=context.createBufferSource(),gain=context.createGain();source.buffer=buffers[2];gain.gain.value=rustleManifest.playback_gain;source.connect(gain);gain.connect(rustleBus);track(source,gain,'rustle');updateDucking();source.start(time);lastRustleTime=time;return true;
     },
-    chime(){
-      if(!enabled||context.state!=='running')return;
-      // Preserve the pre-existing synthesized cue on interactions awaiting supplied audio.
-      for(const voice of [...voices].filter(v=>v.kind==='chime'))stopVoice(voice);
-      [880,1174.66,1567.98].forEach((frequency,i)=>{
-        const source=context.createOscillator(),gain=context.createGain(),time=context.currentTime+i*.09;source.type='sine';source.frequency.value=frequency;
-        gain.gain.setValueAtTime(0,time);gain.gain.linearRampToValueAtTime(.045,time+.012);gain.gain.exponentialRampToValueAtTime(.0001,time+.8);source.connect(gain);gain.connect(master);track(source,gain,'chime');source.start(time);source.stop(time+.85);
-      });
-    },
+    // Generic UI/gift cues reuse the supplied VARCO bell recordings too.
+    chime(){return this.playBell();},
     get enabled(){return enabled;},
   };
 }

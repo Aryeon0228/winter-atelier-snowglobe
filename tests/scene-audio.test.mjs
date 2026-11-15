@@ -63,3 +63,9 @@ test('mailbox and landing clips play once, duck music until all effects finish a
 test('landing cue follows the animation ground-contact event, never takeoff or repeated clicks',async()=>{
  const f=fixture();await f.audio.setEnabled(true);const motion=createSnowmanMotion((root,kind)=>{if(kind==='landing')f.audio.playSnowmanLand();});motion.bind(createSnowman());motion.jump();motion.update(.2);assert.equal(f.sources.length,1);assert.equal(motion.jump(),false);motion.update(.63);assert.equal(f.sources.length,1);motion.update(.02);assert.equal(f.sources.at(-1).buffer.id,5);motion.update(3);assert.equal(f.sources.length,2);
 });
+
+test('generic UI and gift cue uses supplied VARCO recordings and obeys mute/retrigger rules',async()=>{
+ const f=fixture();f.context.createOscillator=()=>{throw Error('Synthesized audio must not be used');};
+ assert.equal(f.audio.chime(),false);await f.audio.setEnabled(true);assert.equal(f.audio.chime(),true);assert.equal(f.sources.at(-1).buffer.id,0);assert.equal(f.audio.chime(),false);
+ f.context.currentTime=.2;assert.equal(f.audio.chime(),true);assert.equal(f.sources.at(-1).buffer.id,1);await f.audio.setEnabled(false);assert.equal(f.audio.chime(),false);
+});

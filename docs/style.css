@@ -27,3 +27,11 @@
 .audio-records{border-top:1px solid var(--line);margin-top:32px;padding-top:6px}.audio-record-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.audio-record-grid figure{margin:0;padding:22px;border:1px solid var(--line);border-radius:13px;background:#fffcf7;min-width:0}.audio-record-grid figcaption{font-size:14px;margin-bottom:15px}.audio-record-grid figcaption span{float:right;font-size:11px;color:var(--muted)}.audio-record-grid audio{display:block;width:100%;height:40px}.audio-record-grid a{display:inline-block;font-size:11px;color:var(--ink);margin-top:15px;text-underline-offset:3px}.audio-record-note{font-size:10px;line-height:1.8;color:var(--muted);margin-top:16px;overflow-wrap:anywhere}@media(max-width:600px){.audio-record-grid{grid-template-columns:1fr}}
 
 @media(max-width:900px){.audio-record-grid{grid-template-columns:1fr}}
+
+/* Prominent icon-only sound control; state is also exposed to assistive technology. */
+#sound{position:absolute;top:24px;right:24px;z-index:6;width:56px;height:56px;display:grid;place-items:center;border:2px solid #e2c78c;border-radius:50%;background:#fff8e9;color:#294239;box-shadow:0 4px 20px #0006;transition:background .18s,color .18s,transform .18s}
+#sound:hover{transform:scale(1.05)}#sound:focus-visible{outline:3px solid #fff;outline-offset:4px}#sound svg{width:28px;height:28px;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#sound[aria-pressed=true]{background:#294f42;color:#fff4d7}#sound .sound-on{display:none}#sound[aria-pressed=true] .sound-on{display:block}#sound[aria-pressed=true] .sound-off{display:none}
+.sound-spinner{display:none;width:25px;height:25px;border:2px solid #29423940;border-top-color:#294239;border-radius:50%;animation:turn .8s linear infinite}#sound[aria-busy=true] svg{display:none}#sound[aria-busy=true] .sound-spinner{display:block}#sound:disabled{opacity:1}
+.sound-credit{color:#e8d9b6;text-decoration:none;font-size:8px;letter-spacing:1px;text-align:right;line-height:1.7}.sound-credit strong{display:block;font-size:11px;letter-spacing:1.2px;color:#fff2cf}.audio-source-emphasis{font-weight:650!important;color:var(--ink)!important}
+@media(max-width:760px){#sound{top:18px;right:18px;width:52px;height:52px}.sound-credit{font-size:7px}.sound-credit strong{font-size:10px}}

@@ -1,3 +1,10 @@
+## Icon-only sound toggle and all-VARCO sound attribution
+
+- Moved sound toggle to the scene upper-right with a 56px high-contrast circular target (52px on mobile). Speaker waves / speaker X distinguish state without color alone. Dynamic aria-label/title, aria-pressed, busy indicator, keyboard focus and failed-load retry retained; no visible on/off wording.
+- Added persistent scene audio credit and prominent portfolio statement that all source audio was created with VARCO Sound, following user confirmation. Updated music/action manifests and reproducible scripts accordingly; original prompts remain unrecorded.
+- Removed the remaining synthesized oscillator cue. UI/gift chimes now reuse the supplied alternating VARCO bells, so all runtime audio uses supplied VARCO recordings.
+- Production build and 30 tests pass. Browser visual/audio review remains unavailable; the layout and state changes have been inspected in source.
+
 ## Mailbox open and snowman landing audio
 
 - Decoded user-provided MP3 bytes despite WAV filenames; true PCM16 mono 48 kHz outputs. Mailbox uses 0–0.85s of 1.16s source; landing uses 0.06–1.55s of 3.06s source, removing leading silence. Peak-matched to 0.6 with 2ms / 140ms fades, zero endpoints, originals unchanged.

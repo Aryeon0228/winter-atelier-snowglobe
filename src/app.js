@@ -114,10 +114,12 @@ document.querySelectorAll('[data-palette]').forEach(b=>b.onclick=()=>{paletteKey
 document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{tool=b.dataset.tool;document.querySelectorAll('[data-tool]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));toast((tool==='bell'?'종':'방울')+'을 달 곳을 트리에서 눌러주세요');});
 $('#ribbon').onchange=()=>{ribbon.visible=$('#ribbon').checked;};
 $('#sound').onclick=async()=>{
-  const button=$('#sound'),next=!sceneAudio.enabled;button.disabled=true;$('#sound-label').textContent=next?'소리 준비 중':'소리 꺼짐';
-  try{const on=await sceneAudio.setEnabled(next);button.setAttribute('aria-pressed',String(on));$('#sound-label').textContent=on?'소리 켜짐':'소리 꺼짐';if(on)sceneAudio.playBell();}
-  catch(error){button.setAttribute('aria-pressed','false');$('#sound-label').textContent='소리 다시 켜기';toast('소리 파일을 불러오지 못했어요. 소리 버튼을 다시 눌러주세요.');console.error(error);}
-  finally{button.disabled=false;}
+  const button=$('#sound'),next=!sceneAudio.enabled;
+  const label=text=>{button.setAttribute('aria-label',text);button.title=text;};
+  button.disabled=true;button.setAttribute('aria-busy','true');label(next?'소리 준비 중':'소리 끄는 중');
+  try{const on=await sceneAudio.setEnabled(next);button.setAttribute('aria-pressed',String(on));label(on?'소리 끄기':'소리 켜기');if(on)sceneAudio.playBell();}
+  catch(error){button.setAttribute('aria-pressed','false');label('소리 다시 켜기');toast('소리 파일을 불러오지 못했어요. 소리 버튼을 다시 눌러주세요.');console.error(error);}
+  finally{button.disabled=false;button.setAttribute('aria-busy','false');}
 };
 $('#shake').onclick=()=>{shakePower=1;treeMotion.excite(null,1.6);for(let i=0;i<snowCount;i++)spawnSnow(i);sceneAudio.playRustle();toast('눈송이가 다시 춤을 춰요');};
 $('#undo').onclick=()=>{if(placements.length>initialDecor.length){placements.pop();createSceneProps();toast('마지막 장식을 지웠어요');}else toast('추가한 장식이 없어요');};
