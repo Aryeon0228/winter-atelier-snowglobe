@@ -45,9 +45,11 @@ export function createSnowman(p=palettes.classic){
   for(const y of [.32,.46])ball(.025,mat(p.gold,.4,.4),[0,y,.335],[1,1,.5]);
   const scarf=mesh(new T.TorusGeometry(.267,.062,12,48),knit,o,[0,.665,0]);scarf.rotation.x=Math.PI/2;scarf.scale.set(1, .96,1);
   for(const [x,y,angle] of [[-.105,.49,-.16],[.045,.53,.10]]){const tail=mesh(new RoundedBoxGeometry(.12,.28,.045,3,.022),knit,o,[x,y,.34]);tail.rotation.z=angle;}
-  const cap=mesh(new T.SphereGeometry(.31,32,16,0,Math.PI*2,0,Math.PI/2),knit,o,[0,1.055,0]);cap.scale.set(1,.75,.96);
-  const brim=mesh(new T.TorusGeometry(.294,.045,12,48),powder,o,[0,1.055,0]);brim.rotation.x=Math.PI/2;
-  ball(.085,powder,[-.03,1.31,0]);
+  // Half-size pointed hat, tilted around the brim so it stays seated on the head.
+  const hat=new T.Group();hat.name='Snowman_Pointy_Hat';hat.scale.setScalar(.5);hat.position.set(-.085,1.125,0);hat.rotation.z=.29;o.add(hat);
+  mesh(new T.ConeGeometry(.294,.38,48),knit,hat,[0,.19,0]);
+  const brim=mesh(new T.TorusGeometry(.294,.045,12,48),powder,hat);brim.rotation.x=Math.PI/2;
+  mesh(new T.SphereGeometry(.045,20,16),powder,hat,[0,.39,0]);
   return o;
 }
 

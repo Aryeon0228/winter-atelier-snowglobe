@@ -1,5 +1,10 @@
 # Validation
 
+## Small tilted hat
+
+Replaced the snowman’s rounded cap with a pointed cone in a hat group at uniform scale 0.5, tilted 0.29 radians around its brim and offset onto the side of the head. Inspected the isolated model with the offline renderer. Rebuilt the web bundle, standalone model, full scene and ZIP. glTF validation: snowman 0 errors / 0 warnings; full scene 0 errors / 1 existing tangent warning.
+
+
 ## Simplified snowman
 
 Removed the two blush patches, carrot nose, smile and both mittens from the source mesh. Inspected the new standalone model with the offline renderer. Rebuilt the live bundle, standalone snowman GLB, combined scene and ornament ZIP. glTF validation: snowman 0 errors / 0 warnings; combined scene 0 errors / 1 existing tangent warning. Live browser inspection remains unavailable.
