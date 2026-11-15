@@ -1,5 +1,14 @@
 # Validation
 
+## Hanging ornament / tree reaction update
+
+- Both tree-click and add-button placement bind a pendulum and trigger a shared tree impulse. New decorations append without rebuilding existing scene objects.
+- Baubles and bells rotate around their top ring; the tree assembly rotates around its ground contact at (0, 0.63, 0). Spring states survive palette rebuilds and are cleared by decoration reset.
+- `node --test tests/tree-motion.test.mjs`: four passing tests cover stationary hooks, unchanged rest positions, fixed tree foot, visible swing, settling after 12 seconds, 30/120 fps consistency, rebinding and 1,000 rapid impulses without instability.
+- Export clones reset tree and pendulum rotations to the resting pose; the animation remains a web interaction rather than a baked GLB clip.
+- Production build passed. Live browser inspection remains unavailable; these are geometry and simulation checks, not an end-to-end browser test.
+
+
 ## Snowman / mailbox / larger gifts update
 
 - Added procedural snowman and mailbox, including palette-dependent materials. Inspected isolated models and complete arrangement with an offline CPU raster preview; this excludes glass, environment and web post-processing.
