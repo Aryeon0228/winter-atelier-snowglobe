@@ -11,8 +11,9 @@
 ## VARCO 제작 이미지와 작업 화면
 
 - `docs/assets/provenance/tree-studio.jpg`, `angel-studio.jpg`: 제작 중 저장한 VARCO 편집기 스크린샷. 상단 계정·크레딧 영역을 제외하고 잘라 웹용 JPEG로 저장했습니다. 새로 캡처한 현재 화면이나 오프라인 렌더가 아닙니다.
-- `tree-concept.jpg`, `bauble-concept.jpg`, `bell-concept.jpg`, `gift-concept.jpg`: 이 프로젝트에서 VARCO로 생성한 2D 디자인 이미지의 웹용 사본. 3D 파일이나 편집기 스크린샷이 아닙니다.
+- `tree-concept.jpg`, `bauble-concept.jpg`, `bell-concept.jpg`, `gift-concept.jpg`, `angel-concept.jpg`: 이 프로젝트에서 VARCO로 생성한 2D 디자인 이미지의 웹용 사본. 3D 파일이나 편집기 스크린샷이 아닙니다.
 - 씬에 실제 사용하는 VARCO 3D 모델은 트리 본체입니다. 방울·종·선물은 위 생성 이미지의 형태와 색을 참고해 코드로 3D 형상을 제작했습니다.
+- `angel-concept.jpg`는 팔을 약 45도 내린 SoftFace 버전의 VARCO 2D 생성 이미지입니다. 캐릭터 디자인 갤러리에 표시합니다.
 - 천사 3D 생성 실험은 제작 기록으로만 공개하며 현재 씬·다운로드 장면에는 포함하지 않습니다.
 
 ## Procedural assets and audio
