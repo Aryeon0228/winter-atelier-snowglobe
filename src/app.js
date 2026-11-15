@@ -38,7 +38,7 @@ const treeRoot=new THREE.Group();treeRoot.name='VARCO_Tree';treeRoot.position.se
 const decor=new THREE.Group(),gifts=new THREE.Group(),scenery=new THREE.Group(),ribbons=new THREE.Group();miniature.add(decor,ribbons);world.add(gifts,scenery);
 gifts.name='Nine_Small_Gifts';
 const giftConfetti=createGiftConfetti(world);
-const giftMotion=createGiftMotion((gift,age)=>giftConfetti.burst(gift,age));
+const giftMotion=createGiftMotion((gift,age)=>{giftConfetti.burst(gift,age);sceneAudio.playConfetti();});
 const snowmanPowder=createSnowmanPowder(world);
 const snowmanMotion=createSnowmanMotion((root,kind,age)=>{snowmanPowder.burst(root,kind,age);if(kind==='landing')sceneAudio.playSnowmanLand();}),mailboxMotion=createMailboxMotion();let snowman=null,mailbox=null;
 let paletteKey='classic',tool='bauble',treeMesh=null,ready=false,shakePower=0,globe=null,ribbon=null,base=null;
@@ -103,13 +103,14 @@ function toast(text){$('#status').textContent=text;$('#status').classList.remove
 document.querySelectorAll('[data-palette]').forEach(b=>b.onclick=()=>{paletteKey=b.dataset.palette;document.querySelectorAll('[data-palette]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));createSceneProps();toast(palettes[paletteKey].name+' 팔레트로 바꿨어요');chime();});
 document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{tool=b.dataset.tool;document.querySelectorAll('[data-tool]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));toast((tool==='bell'?'종':'방울')+'을 달 곳을 트리에서 눌러주세요');});
 $('#ribbon').onchange=()=>{ribbon.visible=$('#ribbon').checked;};
-$('#sound').onclick=async()=>{
-  const button=$('#sound'),next=!sceneAudio.enabled;
-  const label=text=>{button.setAttribute('aria-label','VARCO Sound · '+text);button.title='VARCO Sound · '+text;};
-  button.disabled=true;button.setAttribute('aria-busy','true');label(next?'소리 준비 중':'소리 끄는 중');
-  try{const on=await sceneAudio.setEnabled(next);button.setAttribute('aria-pressed',String(on));label(on?'소리 끄기':'소리 켜기');if(on)sceneAudio.playBell();}
-  catch(error){button.setAttribute('aria-pressed','false');label('소리 다시 켜기');toast('소리 파일을 불러오지 못했어요. 소리 버튼을 다시 눌러주세요.');console.error(error);}
-  finally{button.disabled=false;button.setAttribute('aria-busy','false');}
+const audioControls=[{button:$('#sound-music'),state:'musicEnabled',set:'setMusicEnabled',name:'배경음악'},{button:$('#sound-effects'),state:'effectsEnabled',set:'setEffectsEnabled',name:'오브젝트 효과음'}];
+function refreshAudioControls(){for(const c of audioControls){const on=sceneAudio[c.state],label='VARCO Sound · '+c.name+(on?' 끄기':' 켜기');c.button.setAttribute('aria-pressed',String(on));c.button.setAttribute('aria-label',label);c.button.title=label;}}
+for(const control of audioControls)control.button.onclick=async()=>{
+  const next=!sceneAudio[control.state];for(const c of audioControls)c.button.disabled=true;
+  control.button.setAttribute('aria-busy','true');
+  try{await sceneAudio[control.set](next);if(next&&control.state==='effectsEnabled')sceneAudio.playBell();}
+  catch(error){toast('소리 파일을 불러오지 못했어요. 소리 버튼을 다시 눌러주세요.');console.error(error);}
+  finally{for(const c of audioControls){c.button.disabled=false;c.button.setAttribute('aria-busy','false');}refreshAudioControls();}
 };
 $('#shake').onclick=()=>{shakePower=1;treeMotion.excite(null,1.6);for(let i=0;i<snowCount;i++)spawnSnow(i);sceneAudio.playRustle();toast('눈송이가 다시 춤을 춰요');};
 $('#undo').onclick=()=>{if(placements.length>initialDecor.length){placements.pop();createSceneProps();toast('마지막 장식을 지웠어요');}else toast('추가한 장식이 없어요');};
@@ -117,7 +118,7 @@ $('#reset-decor').onclick=()=>{placements=initialDecor.map(o=>({...o}));createSc
 $('#add-ornament').onclick=()=>{if(!ready)return;if(placements.length>=40){toast('장식은 40개까지 달 수 있어요');return;}const i=placements.length-initialDecor.length,y=1.4+(i%4)*.55,r=1.0-(y-.8)*.24,a=.2+(i%7)*.65;placeDecoration({type:tool,x:-.43+Math.sin(a)*r,y,z:-.25+Math.cos(a)*r,variant:i%3});toast('장식이 딸랑, 트리도 살랑!');};
 function surpriseSnowman(){if(snowmanMotion.jump()){toast('깜짝! 모자까지 폴짝 뛰었어요');}}
 $('#snowman-jump').onclick=surpriseSnowman;
-function openGift(gift){if(gift&&giftMotion.open(gift.name)){chime();toast('선물이 팡! 뚜껑은 잠시 뒤 다시 닫혀요');return true;}return false;}
+function openGift(gift){if(gift&&giftMotion.open(gift.name)){toast('선물이 팡! 뚜껑은 잠시 뒤 다시 닫혀요');return true;}return false;}
 let nextGift=0;
 $('#open-gift').onclick=()=>{for(let i=0;i<gifts.children.length;i++){const gift=gifts.children[nextGift++%gifts.children.length];if(openGift(gift))break;}};
 let mailboxOpening=false,letterAutoRotate=false,letterFocus=null;

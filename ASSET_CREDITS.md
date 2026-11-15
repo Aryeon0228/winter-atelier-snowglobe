@@ -28,7 +28,8 @@
 - 나무 흔들림: 사용자 제공 VARCO Sound 파일 `pine_rustle(GEN_3).wav`. `docs/assets/audio/tree-rustle.wav` (1.48초)에 원래 길이를 유지하며 저·고역 정리, 음량 감소와 짧은 페이드를 적용했습니다. 웹에서는 낮은 볼륨으로 재생하고, 종소리가 활성화된 동안 추가로 낮춥니다. [편집 정보](docs/assets/audio/rustle-manifest.json).
 - 배경음악: 사용자 제공 `Winter Snow Globe.wav`의 처음 42초를 사용했습니다. 41초 이후 음량이 잦아드는 구간에서 1초 페이드아웃, 시작에 40ms 페이드인을 적용했습니다. 스테레오를 유지하고 웹용 MP3와 다운로드용 PCM WAV를 제공합니다. 사용자가 VARCO Sound 생성임을 확인했습니다. 원래 생성 프롬프트는 아직 기록되지 않았습니다. [편집 정보](docs/assets/audio/music-manifest.json).
 - 우체통·눈사람 착지: 사용자 제공 `mailbox_open(GEN_1).wav`, `snowball_jump(GEN_2).wav`를 각각 0.85초·1.49초로 정리했습니다. 착지 파일 앞의 60ms 무음을 제거하고, 잔향 끝 페이드 및 피크 음량 정리를 적용했습니다. [편집 정보와 원본 해시](docs/assets/audio/action-manifest.json). 우체통은 문이 열리기 시작할 때, 눈사람은 점프 시작 0.84초 후 착지 이벤트에서 재생합니다.
-- 팔레트 변경·선물 열기의 공통 효과음도 제공된 VARCO 종소리 편집본을 재사용합니다. 기존 오실레이터 합성 차임은 제거했습니다. 편지 날림 전용 음원은 아직 포함하지 않았습니다.
+- 컨페티: VARCO Sound 원음 `spring_bounce(GEN_2).wav`, `spring_bounce(GEN_1).wav`, `ding_sound(GEN_2).wav`에서 서로 다른 스프링 타격 8개를 추출하고 딩 소리를 겹쳐 8종을 제작했습니다. 짧은 페이드·피치 변형·시간 간격·믹스 비율 조정을 적용했습니다. 새 오실레이터나 노이즈 합성은 사용하지 않았습니다. [편집 레시피와 원본 해시](docs/assets/audio/confetti-manifest.json).
+- 팔레트 변경의 공통 효과음도 제공된 VARCO 종소리 편집본을 재사용합니다. 기존 오실레이터 합성 차임은 제거했습니다. 편지 날림 전용 음원은 아직 포함하지 않았습니다.
 - 서체: 운영체제 기본 서체. 외부 폰트 요청 없음.
 
 ## Software

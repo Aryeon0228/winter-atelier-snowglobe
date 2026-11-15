@@ -1,3 +1,10 @@
+## Independent audio categories and eight confetti mixes
+
+- Separate music and effects switches under VARCO SOUND. Music-only, effects-only, both and neither are supported; switching effects never restarts/stops the music loop. Disabling a category stops only its voices. Defaults remain off. Latest requested category state survives pending loading. Upper-right audio and lower-right labeled VARCO 3D info use matching cream/gold styling.
+- Eight distinct spring transients from the supplied GEN_1 / GEN_2 files are layered with the supplied ding; pitch/rate, delay and balance vary. All source sound remains VARCO. Clips are 0.6906–0.9306s, mono PCM16 48kHz with zero endpoints and peak <=0.65; full recipes and source hashes in confetti-manifest.json. Originals unchanged. Peak cap takes precedence over RMS target.
+- Gift audio fires at the actual 0.34s confetti event. Removed the old immediate gift chime. Shuffled eight-item bags avoid repeats until exhausted and avoid identical neighbors across bag boundaries. Max three simultaneous confetti voices, music ducking, category mute, eight native previews and ZIP download.
+- 34 tests pass, covering independent switching without restarting music, requests during loading, gift event timing, 24-sample shuffle coverage/adjacency, overlap cap, mute and existing interactions. Build and PCM checks pass. Browser visual/audio review is unavailable; subjective mix quality is not verified.
+
 ## Consolidated scene controls
 
 - Combined speaker state icon and VARCO SOUND credit into one upper-right toggle, retaining mute/loading/error accessibility states and one click target.

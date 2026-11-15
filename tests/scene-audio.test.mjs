@@ -2,8 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as T from 'three';
 import {createSceneAudio,BELL_URLS,AUDIO_URLS} from '../src/scene-audio.js';
+import {createGiftMotion} from '../src/gift-motion.js';
 import {createSnowmanMotion} from '../src/snowman-motion.js';
-import {createBauble,createBell,createSnowman} from '../src/props.js';
+import {createBauble,createBell,createSnowman,createGift} from '../src/props.js';
 import {createHangingOrnament} from '../src/tree-motion.js';
 import {findOrnamentHit} from '../src/ornament-picking.js';
 function fixture(fetcher){
@@ -20,12 +21,12 @@ function fixture(fetcher){
  return {audio,context,sources,get fetchCount(){return fetchCount;}};
 }
 test('real bell variants alternate without immediate repeats; mute stops voices and cached audio is reused',async()=>{
- const f=fixture();assert.equal(f.audio.playBell(),false);assert.equal(f.fetchCount,0);assert.equal(await f.audio.setEnabled(true),true);assert.equal(f.fetchCount,6);
+ const f=fixture();assert.equal(f.audio.playBell(),false);assert.equal(f.fetchCount,0);assert.equal(await f.audio.setEnabled(true),true);assert.equal(f.fetchCount,AUDIO_URLS.length);
  for(let i=0;i<6;i++){f.context.currentTime=i*.2;assert.equal(f.audio.playBell(),true);assert.equal(f.sources.at(-1).buffer.id,i%2);assert.equal(f.audio.playBell(),false,'rapid clicks are throttled without advancing variation');}
- assert.ok(f.sources.filter(s=>!s.stopped&&s.buffer.id<2).length<=3);await f.audio.setEnabled(false);assert.ok(f.sources.every(s=>s.stopped));assert.equal(f.audio.playBell(),false);await f.audio.setEnabled(true);assert.equal(f.fetchCount,6);assert.equal(f.audio.playBell(),true);assert.equal(f.sources.at(-1).buffer.id,0);
+ assert.ok(f.sources.filter(s=>!s.stopped&&s.buffer.id<2).length<=3);await f.audio.setEnabled(false);assert.ok(f.sources.every(s=>s.stopped));assert.equal(f.audio.playBell(),false);await f.audio.setEnabled(true);assert.equal(f.fetchCount,AUDIO_URLS.length);assert.equal(f.audio.playBell(),true);assert.equal(f.sources.at(-1).buffer.id,0);
 });
 test('muting during loading prevents late playback, and failed downloads can be retried',async()=>{
- const pending=[];const f=fixture(()=>new Promise(resolve=>pending.push(resolve)));const enabling=f.audio.setEnabled(true);await Promise.resolve();assert.equal(pending.length,6);await f.audio.setEnabled(false);pending.forEach((resolve,i)=>resolve({ok:true,arrayBuffer:async()=>Uint8Array.of(i).buffer}));assert.equal(await enabling,false);assert.equal(f.audio.enabled,false);assert.equal(f.audio.playBell(),false);assert.equal(f.sources.length,0);
+ const pending=[];const f=fixture(()=>new Promise(resolve=>pending.push(resolve)));const enabling=f.audio.setEnabled(true);await Promise.resolve();assert.equal(pending.length,AUDIO_URLS.length);await f.audio.setEnabled(false);pending.forEach((resolve,i)=>resolve({ok:true,arrayBuffer:async()=>Uint8Array.of(i).buffer}));assert.equal(await enabling,false);assert.equal(f.audio.enabled,false);assert.equal(f.audio.playBell(),false);assert.equal(f.sources.length,0);
  let fail=true;const g=fixture(async()=>({ok:!fail,arrayBuffer:async()=>Uint8Array.of(0).buffer}));await assert.rejects(g.audio.setEnabled(true));assert.equal(g.audio.enabled,false);fail=false;assert.equal(await g.audio.setEnabled(true),true);
 });
 for(const type of ['bauble','bell'])test(`ray hits a nested ${type} mesh and resolves its existing hook without adding an ornament`,()=>{
@@ -48,9 +49,9 @@ test('music starts only after enabling, loops quietly once, ducks for bells and 
  const f=fixture();assert.equal(f.sources.length,0);await f.audio.setEnabled(true);
  const music=f.sources[0],bus=music.output.output;assert.equal(music.buffer.id,3);assert.equal(music.loop,true);assert.equal(music.loopEnd,42);assert.equal(music.output.gain.value,.16);assert.equal(bus.gain.value,1);
  f.audio.playBell();const bell=f.sources.at(-1);assert.equal(bus.gain.value,.7);assert.equal(bell.output.gain.value,.65);bell.onended();assert.equal(bus.gain.value,1);
- await f.audio.setEnabled(true);assert.equal(music.stopped,true);assert.equal(f.sources.filter(s=>s.buffer.id===3&&!s.stopped).length,1);
+ await f.audio.setEnabled(true);assert.ok(!music.stopped);assert.equal(f.sources.filter(s=>s.buffer.id===3&&!s.stopped).length,1);
  await f.audio.setEnabled(false);assert.equal(f.sources.filter(s=>s.buffer.id===3&&!s.stopped).length,0);
- await f.audio.setEnabled(true);assert.equal(f.fetchCount,6);assert.equal(f.sources.at(-1).buffer.id,3);
+ await f.audio.setEnabled(true);assert.equal(f.fetchCount,AUDIO_URLS.length);assert.equal(f.sources.at(-1).buffer.id,3);
 });
 
 test('mailbox and landing clips play once, duck music until all effects finish and respect mute',async()=>{
@@ -64,8 +65,35 @@ test('landing cue follows the animation ground-contact event, never takeoff or r
  const f=fixture();await f.audio.setEnabled(true);const motion=createSnowmanMotion((root,kind)=>{if(kind==='landing')f.audio.playSnowmanLand();});motion.bind(createSnowman());motion.jump();motion.update(.2);assert.equal(f.sources.length,1);assert.equal(motion.jump(),false);motion.update(.63);assert.equal(f.sources.length,1);motion.update(.02);assert.equal(f.sources.at(-1).buffer.id,5);motion.update(3);assert.equal(f.sources.length,2);
 });
 
-test('generic UI and gift cue uses supplied VARCO recordings and obeys mute/retrigger rules',async()=>{
+test('generic UI cue uses supplied VARCO recordings and obeys mute/retrigger rules',async()=>{
  const f=fixture();f.context.createOscillator=()=>{throw Error('Synthesized audio must not be used');};
  assert.equal(f.audio.chime(),false);await f.audio.setEnabled(true);assert.equal(f.audio.chime(),true);assert.equal(f.sources.at(-1).buffer.id,0);assert.equal(f.audio.chime(),false);
  f.context.currentTime=.2;assert.equal(f.audio.chime(),true);assert.equal(f.sources.at(-1).buffer.id,1);await f.audio.setEnabled(false);assert.equal(f.audio.chime(),false);
+});
+
+test('confetti shuffle uses all eight mixes before repeating, never repeats across bags, limits overlap and stops on mute',async()=>{
+ const f=fixture();assert.equal(f.audio.playConfetti(),false);await f.audio.setEnabled(true);const musicBus=f.sources[0].output.output,sequence=[];
+ for(let i=0;i<24;i++){f.context.currentTime=i*.1;assert.equal(f.audio.playConfetti(),true);sequence.push(f.sources.at(-1).buffer.id);assert.ok(f.sources.filter(s=>!s.stopped&&s.buffer.id>=6).length<=3);}
+ for(let i=0;i<3;i++)assert.equal(new Set(sequence.slice(i*8,i*8+8)).size,8);
+ for(let i=1;i<sequence.length;i++)assert.notEqual(sequence[i],sequence[i-1]);assert.equal(musicBus.gain.value,.7);
+ for(const s of f.sources.filter(s=>!s.stopped&&s.buffer.id>=6))s.onended();assert.equal(musicBus.gain.value,1);
+ f.audio.playConfetti();const last=f.sources.at(-1);await f.audio.setEnabled(false);assert.equal(last.stopped,true);assert.equal(f.audio.playConfetti(),false);
+});
+test('gift sound fires at confetti burst after lid lift, once per opening',async()=>{
+ const f=fixture();await f.audio.setEnabled(true);const motion=createGiftMotion(()=>f.audio.playConfetti());motion.bind('gift',createGift());motion.open('gift');motion.update(.33);assert.equal(f.sources.length,1);assert.equal(motion.open('gift'),false);motion.update(.02);assert.ok(f.sources.at(-1).buffer.id>=6);motion.update(3);assert.equal(f.sources.length,2);
+});
+
+test('music and object effects are independent; changing effects never restarts music',async()=>{
+ const f=fixture();await f.audio.setEffectsEnabled(true);assert.equal(f.audio.musicEnabled,false);assert.equal(f.audio.effectsEnabled,true);assert.equal(f.sources.length,0);f.audio.playConfetti();const effect=f.sources.at(-1);
+ await f.audio.setMusicEnabled(true);const music=f.sources.at(-1);assert.equal(music.buffer.id,3);assert.ok(!effect.stopped);
+ await f.audio.setMusicEnabled(false);assert.equal(music.stopped,true);assert.equal(f.audio.effectsEnabled,true);assert.ok(!effect.stopped);assert.equal(f.audio.playMailboxOpen(),true);
+ await f.audio.setMusicEnabled(true);const second=f.sources.at(-1);await f.audio.setEffectsEnabled(false);assert.ok(!second.stopped);assert.equal(f.audio.musicEnabled,true);assert.equal(effect.stopped,true);
+ for(const name of ['playBell','playRustle','playMailboxOpen','playSnowmanLand','playConfetti','chime'])assert.equal(f.audio[name](),false,name);
+ await f.audio.setEffectsEnabled(true);assert.ok(!second.stopped);assert.equal(f.sources.filter(s=>s.buffer.id===3&&!s.stopped).length,1);await f.audio.setEnabled(false);
+});
+test('independent choices made during loading preserve the latest category state',async()=>{
+ const pending=[],f=fixture(()=>new Promise(resolve=>pending.push(resolve)));const music=f.audio.setMusicEnabled(true);await Promise.resolve();
+ const effects=f.audio.setEffectsEnabled(true);const muteMusic=f.audio.setMusicEnabled(false);await Promise.resolve();
+ pending.forEach((resolve,i)=>resolve({ok:true,arrayBuffer:async()=>Uint8Array.of(i).buffer}));await Promise.all([music,effects,muteMusic]);
+ assert.equal(f.audio.musicEnabled,false);assert.equal(f.audio.effectsEnabled,true);assert.equal(f.sources.length,0);assert.equal(f.audio.playConfetti(),true);
 });

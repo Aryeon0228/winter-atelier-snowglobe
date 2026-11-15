@@ -1,0 +1,245 @@
+{
+  "source_credit": "All source recordings generated with VARCO Sound and supplied by user. Eight variations edited/layered from those samples; no oscillator or noise synthesis.",
+  "sources": [
+    {
+      "file": "spring_bounce(GEN_2).wav",
+      "sha256": "ddf5dfe71fff463b1c7f9ec29b055587cac4ae01a89aaeedafc00f124da9b6eb"
+    },
+    {
+      "file": "spring_bounce(GEN_1).wav",
+      "sha256": "e8cd7240b49682de7f2f35d83ec41c34d5cfd98063f28843f0933e4ef36bbc34"
+    },
+    {
+      "file": "ding_sound(GEN_2).wav",
+      "sha256": "0ce5d5592eb064d40ee3ed4af1e51a52486c88b8e07470ce07805d6069acf3ae"
+    }
+  ],
+  "editing": "Distinct spring transients; leading silence removed, short edge fades, small resampling/pitch changes; delayed ding layers, RMS matching with peak cap.",
+  "playback_gain": 0.55,
+  "variants": [
+    {
+      "file": "confetti-pop-01.wav",
+      "label": "통 · 챙",
+      "duration_seconds": 0.8769,
+      "spring": {
+        "source": "spring_bounce(GEN_2).wav",
+        "segment_seconds": [
+          0.066771,
+          0.62
+        ],
+        "rate": 1.0,
+        "mix_gain": 0.65
+      },
+      "ding": {
+        "source": "ding_sound(GEN_2).wav",
+        "segment_seconds": [
+          0.066229,
+          0.85
+        ],
+        "rate": 0.92,
+        "delay_seconds": 0.025,
+        "mix_gain": 0.34
+      },
+      "output_gain": 1.0,
+      "rms": 0.037309,
+      "peak": 0.649994,
+      "sha256": "1cf2345e3fa8d2d5767a04b1c7084646af80d0217a6ed31bf6e2806726266155"
+    },
+    {
+      "file": "confetti-pop-02.wav",
+      "label": "뽕 · 짤랑",
+      "duration_seconds": 0.7907,
+      "spring": {
+        "source": "spring_bounce(GEN_2).wav",
+        "segment_seconds": [
+          2.48475,
+          3.0
+        ],
+        "rate": 1.04,
+        "mix_gain": 0.65
+      },
+      "ding": {
+        "source": "ding_sound(GEN_2).wav",
+        "segment_seconds": [
+          0.066229,
+          0.85
+        ],
+        "rate": 1.08,
+        "delay_seconds": 0.065,
+        "mix_gain": 0.45
+      },
+      "output_gain": 0.945003,
+      "rms": 0.056272,
+      "peak": 0.649994,
+      "sha256": "3dcbfdd8a34eb9ba7271e5b19faae66945faac9c06fe2e9d6b5a791b87b3841b"
+    },
+    {
+      "file": "confetti-pop-03.wav",
+      "label": "팡 · 반짝",
+      "duration_seconds": 0.6906,
+      "spring": {
+        "source": "spring_bounce(GEN_2).wav",
+        "segment_seconds": [
+          4.435021,
+          4.98
+        ],
+        "rate": 0.97,
+        "mix_gain": 0.65
+      },
+      "ding": {
+        "source": "ding_sound(GEN_2).wav",
+        "segment_seconds": [
+          0.066229,
+          0.85
+        ],
+        "rate": 1.16,
+        "delay_seconds": 0.015,
+        "mix_gain": 0.38
+      },
+      "output_gain": 1.017509,
+      "rms": 0.051589,
+      "peak": 0.649994,
+      "sha256": "9d753ad19ffa7f1e2931b41127fa6c47c6678c5aa9bc1ae35fc1b02fea9dc7a9"
+    },
+    {
+      "file": "confetti-pop-04.wav",
+      "label": "톡 · 챙",
+      "duration_seconds": 0.8638,
+      "spring": {
+        "source": "spring_bounce(GEN_1).wav",
+        "segment_seconds": [
+          0.024667,
+          0.5
+        ],
+        "rate": 0.96,
+        "mix_gain": 0.65
+      },
+      "ding": {
+        "source": "ding_sound(GEN_2).wav",
+        "segment_seconds": [
+          0.066229,
+          0.85
+        ],
+        "rate": 1.0,
+        "delay_seconds": 0.08,
+        "mix_gain": 0.32
+      },
+      "output_gain": 1.104689,
+      "rms": 0.034335,
+      "peak": 0.649994,
+      "sha256": "4dbf24100861d4823b3ccb10c3f6ed154a2d0a00491c1214820e656307dc8664"
+    },
+    {
+      "file": "confetti-pop-05.wav",
+      "label": "퐁 · 땡",
+      "duration_seconds": 0.9306,
+      "spring": {
+        "source": "spring_bounce(GEN_1).wav",
+        "segment_seconds": [
+          1.685021,
+          2.15
+        ],
+        "rate": 1.02,
+        "mix_gain": 0.65
+      },
+      "ding": {
+        "source": "ding_sound(GEN_2).wav",
+        "segment_seconds": [
+          0.066229,
+          0.85
+        ],
+        "rate": 0.88,
+        "delay_seconds": 0.04,
+        "mix_gain": 0.46
+      },
+      "output_gain": 1.081994,
+      "rms": 0.042277,
+      "peak": 0.649994,
+      "sha256": "37c5afab29ea67736ca4bd0190a96fdc2ae489ae49f46ef5149e5c5d6a7b46e7"
+    },
+    {
+      "file": "confetti-pop-06.wav",
+      "label": "팡 · 찡",
+      "duration_seconds": 0.7598,
+      "spring": {
+        "source": "spring_bounce(GEN_1).wav",
+        "segment_seconds": [
+          3.666292,
+          4.05
+        ],
+        "rate": 1.0,
+        "mix_gain": 0.65
+      },
+      "ding": {
+        "source": "ding_sound(GEN_2).wav",
+        "segment_seconds": [
+          0.066229,
+          0.85
+        ],
+        "rate": 1.12,
+        "delay_seconds": 0.06,
+        "mix_gain": 0.37
+      },
+      "output_gain": 1.0,
+      "rms": 0.038122,
+      "peak": 0.649994,
+      "sha256": "e8b3fdd4d1202c5b425fbef46e89e1c913bbbb3e40fe2c6b1cf9ac0b0e3d67ac"
+    },
+    {
+      "file": "confetti-pop-07.wav",
+      "label": "뿅 · 챙",
+      "duration_seconds": 0.8177,
+      "spring": {
+        "source": "spring_bounce(GEN_1).wav",
+        "segment_seconds": [
+          5.500521,
+          5.95
+        ],
+        "rate": 1.06,
+        "mix_gain": 0.65
+      },
+      "ding": {
+        "source": "ding_sound(GEN_2).wav",
+        "segment_seconds": [
+          0.066229,
+          0.85
+        ],
+        "rate": 0.98,
+        "delay_seconds": 0.018,
+        "mix_gain": 0.43
+      },
+      "output_gain": 1.062285,
+      "rms": 0.038876,
+      "peak": 0.649994,
+      "sha256": "6768475a33ce694a6c04a35b98c2ab42d5127cb27a5a1036a7847fd5bb488718"
+    },
+    {
+      "file": "confetti-pop-08.wav",
+      "label": "통 · 짤랑",
+      "duration_seconds": 0.7431,
+      "spring": {
+        "source": "spring_bounce(GEN_1).wav",
+        "segment_seconds": [
+          7.386938,
+          7.8
+        ],
+        "rate": 0.98,
+        "mix_gain": 0.65
+      },
+      "ding": {
+        "source": "ding_sound(GEN_2).wav",
+        "segment_seconds": [
+          0.066229,
+          0.85
+        ],
+        "rate": 1.2,
+        "delay_seconds": 0.09,
+        "mix_gain": 0.34
+      },
+      "output_gain": 1.060541,
+      "rms": 0.035172,
+      "peak": 0.649994,
+      "sha256": "389f6b8f819be5d2267b58375d206359b4c1fc6d0225a8c6ce078a2a8b833bfd"
+    }
+  ]
+}
