@@ -22,3 +22,14 @@ test('30 and 120 fps reach the same pose',()=>{
  const a=createSnowman(),b=createSnowman(),ma=createSnowmanMotion(),mb=createSnowmanMotion();ma.bind(a);mb.bind(b);ma.jump();mb.jump();for(let i=0;i<15;i++)ma.update(1/30);for(let i=0;i<60;i++)mb.update(1/120);
  assert.ok(Math.abs(a.getObjectByName('Snowman_Head').position.y-b.getObjectByName('Snowman_Head').position.y)<1e-8);
 });
+test('scarf roots stay attached, tips bend independently, flutter follows landing and export restores fabric',()=>{
+ const root=createSnowman(),body=root.getObjectByName('Snowman_Body');
+ const left=root.getObjectByName('Snowman_Scarf_L'),right=root.getObjectByName('Snowman_Scarf_R'),fabric=root.getObjectByName('Snowman_Scarf_Fabric_L');
+ const attachment=left.position.clone(),positions=fabric.geometry.getAttribute('position');let top=0,tip=0;for(let i=1;i<positions.count;i++){if(positions.getY(i)>positions.getY(top))top=i;if(positions.getY(i)<positions.getY(tip))tip=i;}
+ const restingTip=fabric.getVertexPosition(tip,new T.Vector3());
+ applySnowmanPose(root,.4);root.updateMatrixWorld(true);const attached=body.worldToLocal(left.getWorldPosition(new T.Vector3()));assert.ok(attached.distanceTo(attachment)<1e-8);
+ assert.ok(Math.abs(left.rotation.x)>.2);assert.notEqual(left.rotation.x,right.rotation.x);assert.ok(fabric.getVertexPosition(tip,new T.Vector3()).distanceTo(restingTip)>.02);assert.ok(Math.abs(fabric.getVertexPosition(top,new T.Vector3()).y)<1e-7);
+ applySnowmanPose(root,1.05);assert.ok(Math.abs(left.rotation.x)>.1);
+ const liveAngle=left.rotation.x,copy=root.clone(true);applySnowmanPose(copy);assert.equal(copy.getObjectByName('Snowman_Scarf_L').rotation.x,0);assert.equal(copy.getObjectByName('Snowman_Scarf_Fabric_L').morphTargetInfluences[0],0);assert.equal(left.rotation.x,liveAngle);
+ applySnowmanPose(root,2.4);assert.equal(left.rotation.x,0);assert.equal(right.rotation.x,0);assert.equal(fabric.morphTargetInfluences[0],0);
+});

@@ -47,7 +47,17 @@ export function createSnowman(p=palettes.classic){
   }
   for(const y of [.32,.46])ball(.025,mat(p.gold,.4,.4),body,[0,y,.335],[1,1,.5]);
   const scarf=mesh(new T.TorusGeometry(.267,.062,12,48),knit,body,[0,.665,0]);scarf.rotation.x=Math.PI/2;scarf.scale.set(1,.96,1);
-  for(const [x,y,angle] of [[-.105,.49,-.16],[.045,.53,.10]]){const tail=mesh(new RoundedBoxGeometry(.12,.28,.045,3,.022),knit,body,[x,y,.34]);tail.rotation.z=angle;}
+  for(const [index,[x,y,angle]] of [[-.105,.49,-.16],[.045,.53,.10]].entries()){
+    const side=index===0?'L':'R',anchor=new T.Group();anchor.name='Snowman_Scarf_'+side;
+    anchor.position.set(x-Math.sin(angle)*.14,y+Math.cos(angle)*.14,.34);anchor.rotation.z=angle;body.add(anchor);
+    // Anchor the fabric at its upper edge; bend progressively toward the free tip.
+    const geometry=new RoundedBoxGeometry(.12,.28,.045,4,.022);geometry.translate(0,-.14,0);
+    const bent=geometry.clone(),basePosition=geometry.getAttribute('position'),bentPosition=bent.getAttribute('position');
+    for(let i=0;i<bentPosition.count;i++){const u=Math.max(0,Math.min(1,-basePosition.getY(i)/.28));bentPosition.setXYZ(i,basePosition.getX(i)+(index===0?-1:1)*.035*u*u,basePosition.getY(i),basePosition.getZ(i)+.075*u*u*u);}
+    bent.computeVertexNormals();
+    geometry.morphAttributes.position=[bentPosition.clone()];geometry.morphAttributes.normal=[bent.getAttribute('normal').clone()];
+    bent.dispose();const fabric=mesh(geometry,knit,anchor);fabric.name='Snowman_Scarf_Fabric_'+side;
+  }
   const hat=new T.Group();hat.name='Snowman_Pointy_Hat';hat.scale.setScalar(.7);hat.position.set(-.055,1.075,0);hat.rotation.z=.29;o.add(hat);
   mesh(new T.ConeGeometry(.294,.38,48),knit,hat,[0,.19,0]);
   const brim=mesh(new T.TorusGeometry(.294,.045,12,48),powder,hat);brim.rotation.x=Math.PI/2;

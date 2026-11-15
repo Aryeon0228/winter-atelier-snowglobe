@@ -1,5 +1,14 @@
 # Validation
 
+## Scarf follow-through
+
+- Converted both hanging scarf ends to independent top-anchored groups, preserving the resting placement. Added position/normal morph targets that bend progressively toward the free tips.
+- Offset takeoff/landing responses produce independent outward flaps; a smooth fade settles both tails at 2.4 seconds while the existing jump remains 1.6 seconds. The collar follows the body.
+- Twelve tests pass, including fixed scarf attachments, moving/bending free tips, left/right timing differences, landing follow-through and export/rest restoration without mutating the live model.
+- Inspected a 37-frame offline render sequence with the actual morph deformation baked for preview. Browser inspection remains unavailable.
+- Rebuilt standalone and combined GLBs and ZIP. glTF validation: snowman 0 errors / 0 warnings; combined scene 0 errors / 1 existing tangent warning.
+
+
 ## Mailbox letter interaction
 
 - Built a hollow mailbox with a hinged door and envelope. The door opens first; the envelope emerges and a native modal dialog opens after 0.85 seconds. Closing returns the envelope and door to rest.
