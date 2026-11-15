@@ -1,5 +1,10 @@
 # Validation
 
+## Simplified snowman
+
+Removed the two blush patches, carrot nose, smile and both mittens from the source mesh. Inspected the new standalone model with the offline renderer. Rebuilt the live bundle, standalone snowman GLB, combined scene and ornament ZIP. glTF validation: snowman 0 errors / 0 warnings; combined scene 0 errors / 1 existing tangent warning. Live browser inspection remains unavailable.
+
+
 ## Hanging ornament / tree reaction update
 
 - Both tree-click and add-button placement bind a pendulum and trigger a shared tree impulse. New decorations append without rebuilding existing scene objects.
