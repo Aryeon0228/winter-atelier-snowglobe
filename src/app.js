@@ -50,7 +50,7 @@ gifts.name='Nine_Small_Gifts';
 const giftConfetti=createGiftConfetti(world);
 const giftMotion=createGiftMotion((gift,age)=>giftConfetti.burst(gift,age));
 const snowmanPowder=createSnowmanPowder(world);
-const snowmanMotion=createSnowmanMotion((root,kind,age)=>snowmanPowder.burst(root,kind,age)),mailboxMotion=createMailboxMotion();let snowman=null,mailbox=null;
+const snowmanMotion=createSnowmanMotion((root,kind,age)=>{snowmanPowder.burst(root,kind,age);if(kind==='landing')sceneAudio.playSnowmanLand();}),mailboxMotion=createMailboxMotion();let snowman=null,mailbox=null;
 let paletteKey='classic',tool='bauble',treeMesh=null,ready=false,shakePower=0,globe=null,ribbon=null,base=null;
 const initialDecor=[];
 for(let tier=0;tier<4;tier++){const y=[1.25,1.97,2.68,3.35][tier],r=[1.05,.84,.61,.38][tier];const count=[5,4,4,3][tier];for(let k=0;k<count;k++){const a=k/count*Math.PI*2+tier*.53;initialDecor.push({type:(k+tier)%4===0?'bell':'bauble',x:-.43+Math.sin(a)*r,y,z:-.25+Math.cos(a)*r,variant:(k+tier)%3});}}
@@ -123,14 +123,14 @@ $('#shake').onclick=()=>{shakePower=1;treeMotion.excite(null,1.6);for(let i=0;i<
 $('#undo').onclick=()=>{if(placements.length>initialDecor.length){placements.pop();createSceneProps();toast('마지막 장식을 지웠어요');}else toast('추가한 장식이 없어요');};
 $('#reset-decor').onclick=()=>{placements=initialDecor.map(o=>({...o}));createSceneProps();treeMotion.reset();giftMotion.reset();giftConfetti.clear();toast('처음 장식으로 되돌렸어요');};
 $('#add-ornament').onclick=()=>{if(!ready)return;if(placements.length>=40){toast('장식은 40개까지 달 수 있어요');return;}const i=placements.length-initialDecor.length,y=1.4+(i%4)*.55,r=1.0-(y-.8)*.24,a=.2+(i%7)*.65;placeDecoration({type:tool,x:-.43+Math.sin(a)*r,y,z:-.25+Math.cos(a)*r,variant:i%3});toast('장식이 딸랑, 트리도 살랑!');};
-function surpriseSnowman(){if(snowmanMotion.jump()){chime();toast('깜짝! 모자까지 폴짝 뛰었어요');}}
+function surpriseSnowman(){if(snowmanMotion.jump()){toast('깜짝! 모자까지 폴짝 뛰었어요');}}
 $('#snowman-jump').onclick=surpriseSnowman;
 function openGift(gift){if(gift&&giftMotion.open(gift.name)){chime();toast('선물이 팡! 뚜껑은 잠시 뒤 다시 닫혀요');return true;}return false;}
 let nextGift=0;
 $('#open-gift').onclick=()=>{for(let i=0;i<gifts.children.length;i++){const gift=gifts.children[nextGift++%gifts.children.length];if(openGift(gift))break;}};
 let mailboxOpening=false,letterAutoRotate=false,letterFocus=null;
 const letterUI=setupLetterUI({onClose:()=>{mailboxMotion.close();controls.enabled=true;controls.autoRotate=letterAutoRotate;mailboxOpening=false;letterFocus?.focus();toast('편지를 닫았어요');},getSceneCanvas:()=>{cameraEffects.render(performance.now()/1000);return canvas;},download});
-function openMailbox(){if(mailboxOpening||letterUI.isOpen)return;mailboxOpening=true;letterFocus=document.activeElement;letterAutoRotate=controls.autoRotate;controls.enabled=false;controls.autoRotate=false;chime();toast('우체통에서 편지를 꺼내고 있어요');mailboxMotion.open(()=>letterUI.open());}
+function openMailbox(){if(mailboxOpening||letterUI.isOpen)return;mailboxOpening=true;letterFocus=document.activeElement;letterAutoRotate=controls.autoRotate;controls.enabled=false;controls.autoRotate=false;toast('우체통에서 편지를 꺼내고 있어요');mailboxMotion.open(()=>letterUI.open());sceneAudio.playMailboxOpen();}
 $('#write-letter').onclick=openMailbox;
 const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let pointerDown=null;
 canvas.addEventListener('pointerdown',e=>{if(e.isPrimary===false||e.button!==0){pointerDown=null;return;}pointerDown={x:e.clientX,y:e.clientY,id:e.pointerId,moved:false};});

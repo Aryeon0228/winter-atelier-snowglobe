@@ -1,3 +1,10 @@
+## Mailbox open and snowman landing audio
+
+- Decoded user-provided MP3 bytes despite WAV filenames; true PCM16 mono 48 kHz outputs. Mailbox uses 0–0.85s of 1.16s source; landing uses 0.06–1.55s of 3.06s source, removing leading silence. Peak-matched to 0.6 with 2ms / 140ms fades, zero endpoints, originals unchanged.
+- Mailbox audio begins with opening; landing audio fires once from the same 0.84s animation event that triggers landing powder, not from a timer or takeoff click. Removed the old generic chime for these two interactions. Other interactions retain their existing cues.
+- Per-effect voice replacement and 150ms retrigger guard, playback gain 0.6, default muted, mute cancels voices. Music ducks while any bell/mailbox/landing voice is active; rustle still ducks only for bells.
+- 29 tests pass, including landing timing through the motion controller, repeated-click rejection, mute, overlapping effect ducking and existing interactions. Build and PCM checks pass. Actual browser listening is not verified in this environment.
+
 ## Winter Snow Globe background music
 
 - Source is 159.11 seconds, stereo 48 kHz MP3 despite its WAV filename. Preserved the first 42 seconds; PCM analysis shows the level falls after 41 seconds (-23.9 dBFS at 41.00–41.25, -31.8 at 41.75–42.00). Applied 40 ms fade-in and 1-second fade-out ending at 42.00. This is a gentle fade/pause loop, not a verified beat-matched seamless loop.

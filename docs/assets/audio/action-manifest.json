@@ -1,0 +1,33 @@
+{
+  "source_credit": "User-provided sound effects; generation service and prompts not independently recorded.",
+  "clips": [
+    {
+      "file": "mailbox-open.wav",
+      "source_filename": "mailbox_open(GEN_1).wav",
+      "source_sha256": "4bba10b8da0393efc262cd3ad4a90f9a64462f0e6da857fd44ed0f4ce400819a",
+      "source_segment_seconds": [
+        0,
+        0.85
+      ],
+      "duration_seconds": 0.85,
+      "format": "PCM WAV, mono, 48000 Hz, 16-bit",
+      "editing": "Trim quiet tail; remove 60 ms leading silence for landing only; peak matched to 0.6; 2 ms fade-in / 140 ms fade-out.",
+      "playback_gain": 0.6,
+      "sha256": "5d7a74128bf21b5e236aa41608da10b6033d21e9d4b72e39cceab43a5d3f673f"
+    },
+    {
+      "file": "snowman-land.wav",
+      "source_filename": "snowball_jump(GEN_2).wav",
+      "source_sha256": "f6366616e7da26f2339ae10c08e84fdfebfb1a21cc0ec3f58913ca70e1e6bb52",
+      "source_segment_seconds": [
+        0.06,
+        1.55
+      ],
+      "duration_seconds": 1.49,
+      "format": "PCM WAV, mono, 48000 Hz, 16-bit",
+      "editing": "Trim quiet tail; remove 60 ms leading silence for landing only; peak matched to 0.6; 2 ms fade-in / 140 ms fade-out.",
+      "playback_gain": 0.6,
+      "sha256": "8138f602cac90e5b21fc3ccb071cd5e8c52178360330bcf58aa95f6935ecccfc"
+    }
+  ]
+}
