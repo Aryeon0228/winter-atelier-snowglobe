@@ -9,7 +9,30 @@ export function star(radius=.5,depth=.12,color='#d9ae55'){const g=new T.ExtrudeG
 export function bow(color='#fff0d1',scale=1){const o=new T.Group(),m=mat(color,.08,.33);for(const side of [-1,1]){const loop=mesh(new T.TorusGeometry(.17,.052,8,24),m,o,[side*.16,.05,0]);loop.scale.set(1.25,.8,.55);loop.rotation.z=-side*.3;const tail=mesh(new RoundedBoxGeometry(.1,.26,.035,2,.02),m,o,[side*.09,-.14,-.01]);tail.rotation.z=side*.28;}mesh(new T.SphereGeometry(.09,16,12),m,o).scale.set(1,.8,.65);o.scale.setScalar(scale);return o;}
 export function createBauble(p=palettes.classic,index=0){const o=new T.Group();o.name='Bauble';const color=[p.red,p.gold,p.cream][index%3];mesh(new T.SphereGeometry(.5,32,24),mat(color,index%3===1?.65:.13,.25),o);mesh(new T.SphereGeometry(.505,32,8,0,Math.PI*2,Math.PI/2-.13,.26),mat(index%3===2?p.red:p.cream,.1,.35),o);for(const side of [-1,1]){const ring=mesh(new T.TorusGeometry(.5,.008,6,40),mat(p.gold,.7,.25),o,[0,side*.066,0]);ring.rotation.x=Math.PI/2;}mesh(new T.CylinderGeometry(.12,.13,.14,16),mat(p.gold,.75,.23),o,[0,.53,0]);mesh(new T.TorusGeometry(.085,.022,8,20),mat(p.gold,.75,.23),o,[0,.67,0]);const motif=star(.13,.025,p.gold);motif.position.set(0,0,.502);o.add(motif);return o;}
 export function createBell(p=palettes.classic){const o=new T.Group();o.name='Bell';const points=[[.34,0],[.39,.025],[.4,.07],[.33,.12],[.28,.32],[.25,.5],[.18,.62],[.06,.66],[0,.67],[0,.59],[.12,.58],[.20,.49],[.23,.31],[.29,.12],[.34,.06],[.34,0]].map(x=>new T.Vector2(...x));mesh(new T.LatheGeometry(points,32),mat(p.gold,.76,.24),o);mesh(new T.SphereGeometry(.09,16,12),mat(p.gold,.65,.23),o,[0,.015,0]);mesh(new T.CylinderGeometry(.018,.018,.25,8),mat(p.gold,.6,.3),o,[0,.18,0]);mesh(new T.TorusGeometry(.085,.025,8,20),mat(p.gold,.7,.25),o,[0,.73,0]);const b=bow(p.green,.75);b.position.set(0,.7,.19);o.add(b);return o;}
-export function createGift(p=palettes.classic,index=0){const o=new T.Group();o.name='GiftBox';const colors=[p.red,p.cream,p.green],ribbons=[p.cream,p.green,p.gold];const b=mat(colors[index%3],.04,.42),r=mat(ribbons[index%3],.15,.3);mesh(new RoundedBoxGeometry(.86,.72,.8,3,.05),b,o,[0,.36,0]);mesh(new RoundedBoxGeometry(.91,.12,.85,3,.035),b,o,[0,.76,0]);mesh(new RoundedBoxGeometry(.15,.85,.815,2,.013),r,o,[0,.405,0]);mesh(new RoundedBoxGeometry(.875,.85,.15,2,.013),r,o,[0,.405,0]);const knot=bow(ribbons[index%3],1.1);knot.rotation.x=-Math.PI/2;knot.position.set(0,.86,0);o.add(knot);return o;}
+export function createGift(p=palettes.classic,index=0){
+  const o=new T.Group();o.name='GiftBox';o.userData.interaction='gift';
+  const colors=[p.red,p.cream,p.green],ribbons=[p.cream,p.green,p.gold];
+  const b=mat(colors[index%3],.04,.42),r=mat(ribbons[index%3],.15,.3);
+  const body=new T.Group();body.name='Gift_Body';o.add(body);
+  // Four walls and a floor leave a real cavity when the lid lifts away.
+  mesh(new RoundedBoxGeometry(.86,.10,.8,2,.035),b,body,[0,.05,0]);
+  for(const side of [-1,1]){
+    mesh(new RoundedBoxGeometry(.86,.64,.08,2,.025),b,body,[0,.40,side*.36]);
+    mesh(new RoundedBoxGeometry(.08,.64,.66,2,.025),b,body,[side*.39,.40,0]);
+    mesh(new RoundedBoxGeometry(.15,.70,.018,1,.007),r,body,[0,.36,side*.402]);
+    mesh(new RoundedBoxGeometry(.018,.70,.15,1,.007),r,body,[side*.432,.36,0]);
+  }
+  const lid=new T.Group();lid.name='Gift_Lid';lid.position.y=.76;o.add(lid);
+  mesh(new RoundedBoxGeometry(.91,.12,.85,2,.035),b,lid);
+  mesh(new RoundedBoxGeometry(.15,.018,.855,1,.007),r,lid,[0,.061,0]);
+  mesh(new RoundedBoxGeometry(.915,.018,.15,1,.007),r,lid,[0,.061,0]);
+  for(const side of [-1,1]){
+    mesh(new RoundedBoxGeometry(.15,.105,.018,1,.007),r,lid,[0,0,side*.425]);
+    mesh(new RoundedBoxGeometry(.018,.105,.15,1,.007),r,lid,[side*.455,0,0]);
+  }
+  const knot=bow(ribbons[index%3],1.1);knot.name='Gift_Bow';knot.rotation.x=-Math.PI/2;knot.position.set(0,.10,0);lid.add(knot);
+  return o;
+}
 export function createRibbon(p=palettes.classic){const o=new T.Group();o.name='SpiralRibbon';const vertices=[],uv=[],indices=[],segments=240,width=.065;const left=[],right=[];for(let i=0;i<=segments;i++){const t=i/segments,y=1.05+2.98*t,angle=-Math.PI/2+t*Math.PI*6,r=1.03*(1-t)+.23;const x=Math.cos(angle)*r,z=Math.sin(angle)*r;vertices.push(x,y-width,z,x,y+width,z);uv.push(0,t*6,1,t*6);left.push(new T.Vector3(x,y-width,z));right.push(new T.Vector3(x,y+width,z));if(i<segments){const a=i*2;indices.push(a,a+1,a+2,a+1,a+3,a+2);}}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(vertices,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();const m=mat(p.cream,.17,.33);m.side=T.DoubleSide;mesh(g,m,o);for(const points of [left,right])mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points),240,.008,5,false),mat(p.gold,.7,.25),o);return o;}
 export function createBase(p=palettes.classic){const o=new T.Group();o.name='SnowglobeBase';mesh(new T.CylinderGeometry(2.08,2.18,.3,96),mat(p.red,.12,.36),o,[0,.22,0]);mesh(new T.CylinderGeometry(2.13,2.16,.065,96),mat(p.gold,.75,.25),o,[0,.07,0]);mesh(new T.CylinderGeometry(2.04,2.12,.08,96),mat(p.gold,.72,.25),o,[0,.405,0]);mesh(new T.CylinderGeometry(1.99,2.04,.1,96),mat('#fffef8',0,.96),o,[0,.495,0]);o.add(createSnowdrifts());return o;}
 export function createDome(){

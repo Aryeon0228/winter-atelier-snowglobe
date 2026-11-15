@@ -1,3 +1,12 @@
+## Gift opening / confetti / snowman placement
+
+- Rebuilt gifts as hollow boxes with independent lids; lid ribbons and bows follow their lids. Click or keyboard button triggers anticipation, lift, one burst, hover and automatic closing over 2.7 seconds. Nine gifts keep separate states; palette rebuild preserves the pose; repeated clicks on an active gift do not restart it.
+- Confetti uses a fixed pool of 360 instanced paper pieces, 40 per burst, with bounded motion inside the dome, above the snow, and complete expiry. Idle frames skip pool updates. Scene export removes confetti and restores cloned lids to closed poses.
+- Lowered snowman's shared Y coordinate from 0.625 to 0.565 in both live and downloadable scenes.
+- 16 automated tests pass, including hollow cavity raycast, bow/lid hierarchy, exact closing/export restoration, independent/repeated clicks, delayed single burst, palette rebind, 30/120 fps timing, pool bounds and expiry.
+- Inspected four offline renders of the actual gift pose and particle calculations (closed, burst, hover, closed again). These are not browser screenshots; live browser interaction remains unverified.
+- Regenerated gift models, combined scene and ZIP. Standalone gift: 0 glTF errors / 0 warnings. Combined scene: 0 errors / 1 existing tree tangent warning; confirmed nine lid nodes and updated snowman translation.
+
 # Validation
 
 ## Scarf follow-through
