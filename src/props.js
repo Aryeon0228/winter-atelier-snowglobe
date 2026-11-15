@@ -2,7 +2,24 @@ import * as T from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 export const palettes={classic:{name:'클래식 크리스마스',red:'#922f46',cream:'#fff0d1',green:'#23533f',gold:'#d9ae55'},snow:{name:'눈빛과 샴페인',red:'#d3e5e2',cream:'#fffaf0',green:'#4a7371',gold:'#d7bd86'},aurora:{name:'보랏빛 오로라',red:'#7344c4',cream:'#f3e6ff',green:'#29b8b0',gold:'#cbd9f4'}};
-export const mat=(color,metalness=0,roughness=.38)=>new T.MeshStandardMaterial({color,metalness,roughness});
+const auroraHighlights={
+  [palettes.aurora.red]:'#43edff',
+  [palettes.aurora.green]:'#ff49c9',
+  [palettes.aurora.gold]:'#ff67dc',
+};
+export const mat=(color,metalness=0,roughness=.38)=>{
+  const highlight=auroraHighlights[color];
+  if(!highlight)return new T.MeshStandardMaterial({color,metalness,roughness});
+  const fabric=roughness>=.7;
+  // Dielectric colored specular + a tinted rim; emission would recolor the whole object.
+  return new T.MeshPhysicalMaterial({
+    name:fabric?'Aurora_Tinted_Fabric':'Aurora_Chromatic_Enamel',
+    color,metalness:fabric?0:.03,roughness:fabric?roughness:Math.min(roughness,.22),
+    ior:1.8,specularColor:highlight,specularIntensity:fabric?.65:1,
+    clearcoat:fabric?0:.18,clearcoatRoughness:.12,
+    sheen:fabric?.6:.3,sheenColor:highlight,sheenRoughness:fabric?.58:.4,
+  });
+};
 const mesh=(g,m,parent,p=[0,0,0])=>{const o=new T.Mesh(g,m);o.position.set(...p);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;};
 export function starShape(radius=.5){const s=new T.Shape();for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,r=i%2?radius*.46:radius;const x=Math.cos(a)*r,y=Math.sin(a)*r;i?s.lineTo(x,y):s.moveTo(x,y);}s.closePath();return s;}
 export function star(radius=.5,depth=.12,color='#d9ae55'){const g=new T.ExtrudeGeometry(starShape(radius),{depth,bevelEnabled:true,bevelSegments:3,steps:1,bevelSize:radius*.08,bevelThickness:radius*.06});g.translate(0,0,-depth/2);return new T.Mesh(g,mat(color,.7,.25));}

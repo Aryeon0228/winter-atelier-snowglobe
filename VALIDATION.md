@@ -1,3 +1,10 @@
+## Aurora colored highlights
+
+- Aurora purple now uses cyan specular/sheen; turquoise and pale blue metallic-accent colors use pink/magenta specular/sheen. Base colors remain unchanged and emission stays zero. Glossy props use low-metalness physical enamel with roughness capped at 0.22, IOR 1.8 and a light clearcoat. Hat/scarf keep their original roughness with tinted fabric sheen and no clearcoat.
+- The material helper only applies this finish to the three Aurora colors; Classic and Snow retain their original standard materials.
+- 21 automated tests pass, including palette isolation, cyan/magenta channel checks, base-color/emission preservation, fabric roughness and GLB export of KHR_materials_specular/clearcoat/sheen. All three Aurora gift files validate with zero errors and warnings; ZIP regenerated.
+- Browser appearance has not been visually verified. The offline model renderer does not reproduce these specular effects, so it was not used as visual evidence.
+
 ## Raised gift bows / mailbox reaction / snow powder / scene controls
 
 - Removed the lower-left decorative star and upper-right icon buttons. Removed corresponding event handlers so missing elements cannot stop initialization. Manual orbit remains available; PNG letter-card export remains available in the letter editor.
