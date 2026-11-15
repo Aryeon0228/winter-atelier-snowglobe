@@ -1,5 +1,13 @@
 # Validation
 
+## Mailbox letter interaction
+
+- Built a hollow mailbox with a hinged door and envelope. The door opens first; the envelope emerges and a native modal dialog opens after 0.85 seconds. Closing returns the envelope and door to rest.
+- Added object clicking and a keyboard-accessible open button, labeled To/From/message fields, 300-character limit, localStorage draft recovery and PNG export combining the current WebGL canvas with the letter. Input is handled as plain text. Storage failures leave the editor and download available.
+- Eleven tests pass: mailbox timing/close/rebind/export restoration, draft round-trip/malformed and blocked storage, Korean line wrapping and long multiline card layout, mocked dialog/form input/save/download/close integration, plus prior snowman and tree tests. Native modal focus and real browser PNG download remain unverified because browser control is unavailable.
+- Inspected an offline render of the opened mailbox. Regenerated static downloads and preview. glTF validation: mailbox 0 errors / 0 warnings; full scene 0 errors / 1 existing tangent warning.
+
+
 ## Snowman click jump
 
 - Split the existing model into body (with scarf), head (with eyes) and independent tilted hat without changing its resting appearance.

@@ -59,15 +59,23 @@ export function createMailbox(p=palettes.classic){
   const o=new T.Group();o.name='Christmas_Mailbox';const red=mat(p.red,.18,.37),gold=mat(p.gold,.7,.3),dark=mat('#33232a',0,.68),snow=mat('#fffaf1',0,.95);
   mesh(new T.CylinderGeometry(.055,.075,.77,20),red,o,[0,.385,0]);
   mesh(new T.CylinderGeometry(.17,.20,.055,32),gold,o,[0,.028,0]);
-  mesh(new RoundedBoxGeometry(.62,.46,.38,5,.09),red,o,[0,.96,0]);
-  // Slightly raised front panel, mail slot and small brass envelope emblem.
-  mesh(new RoundedBoxGeometry(.51,.35,.027,4,.06),gold,o,[0,.955,.193]);
-  mesh(new RoundedBoxGeometry(.475,.315,.028,4,.05),red,o,[0,.955,.212]);
-  mesh(new RoundedBoxGeometry(.31,.035,.012,3,.01),dark,o,[0,1.035,.233]);
-  const line=(points,r=.008)=>mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(v=>new T.Vector3(...v))),16,r,6,false),gold,o);
-  mesh(new RoundedBoxGeometry(.18,.115,.015,2,.012),mat(p.cream,0,.6),o,[0,.915,.239]);
-  line([[-.085,.96,.251],[0,.91,.253],[.085,.96,.251]],.006);
-  const latch=mesh(new T.SphereGeometry(.018,12,8),gold,o,[.172,.91,.242]);latch.scale.z=.5;
+  // Hollow box: the front door can open onto a real interior.
+  mesh(new RoundedBoxGeometry(.62,.055,.38,3,.02),red,o,[0,.757,0]);
+  mesh(new RoundedBoxGeometry(.62,.055,.38,3,.02),red,o,[0,1.163,0]);
+  for(const x of [-.285,.285])mesh(new RoundedBoxGeometry(.05,.40,.38,3,.018),red,o,[x,.96,0]);
+  mesh(new RoundedBoxGeometry(.54,.37,.035,3,.02),dark,o,[0,.96,-.172]);
+  const door=new T.Group();door.name='Mailbox_Door';door.position.set(0,.78,.21);o.add(door);
+  mesh(new RoundedBoxGeometry(.51,.35,.027,4,.06),gold,door,[0,.175,-.017]);
+  mesh(new RoundedBoxGeometry(.475,.315,.028,4,.05),red,door,[0,.175,.002]);
+  mesh(new RoundedBoxGeometry(.31,.035,.012,3,.01),dark,door,[0,.255,.023]);
+  const line=(parent,points,r=.008)=>mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(v=>new T.Vector3(...v))),16,r,6,false),gold,parent);
+  mesh(new RoundedBoxGeometry(.18,.115,.015,2,.012),mat(p.cream,0,.6),door,[0,.135,.029]);
+  line(door,[[-.085,.18,.041],[0,.13,.043],[.085,.18,.041]],.006);
+  const latch=mesh(new T.SphereGeometry(.018,12,8),gold,door,[.172,.13,.032]);latch.scale.z=.5;
+  const letter=new T.Group();letter.name='Mailbox_Letter';letter.position.set(0,.96,0);letter.visible=false;o.add(letter);
+  mesh(new RoundedBoxGeometry(.35,.235,.018,3,.015),mat(p.cream,0,.7),letter);
+  line(letter,[[-.16,.10,.014],[0,-.025,.017],[.16,.10,.014]],.005);
+  const seal=mesh(new T.SphereGeometry(.023,16,10),red,letter,[0,-.025,.025]);seal.scale.z=.3;
   const snowcap=mesh(new T.SphereGeometry(1,32,16),snow,o,[0,1.188,0]);snowcap.scale.set(.32,.057,.207);
   mesh(new T.CylinderGeometry(.012,.012,.25,12),gold,o,[.341,1.12,0]);
   mesh(new RoundedBoxGeometry(.12,.085,.018,2,.008),red,o,[.39,1.22,0]);
