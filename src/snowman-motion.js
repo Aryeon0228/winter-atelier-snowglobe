@@ -39,12 +39,14 @@ export function applySnowmanPose(root,time=SNOWMAN_REACTION_DURATION){
     if(fabric)fabric.morphTargetInfluences[0]=motion.bend;
   }
 }
-export function createSnowmanMotion(){
+export function createSnowmanMotion(onPowder=()=>{}){
   let root=null,elapsed=SNOWMAN_REACTION_DURATION;
   return {
     bind(next){root=next;applySnowmanPose(root,elapsed);},
     jump(){if(!root||elapsed<SNOWMAN_REACTION_DURATION)return false;elapsed=0;applySnowmanPose(root,elapsed);return true;},
-    update(delta){if(!root||elapsed>=SNOWMAN_REACTION_DURATION)return;elapsed=Math.min(SNOWMAN_REACTION_DURATION,elapsed+Math.max(0,delta));applySnowmanPose(root,elapsed);},
+    update(delta){if(!root||elapsed>=SNOWMAN_REACTION_DURATION)return;const before=elapsed;elapsed=Math.min(SNOWMAN_REACTION_DURATION,elapsed+Math.max(0,delta));applySnowmanPose(root,elapsed);
+      for(const [time,kind] of [[.14,'takeoff'],[.84,'landing']])if(before<time&&elapsed>=time)onPowder(root,kind,elapsed-time);
+    },
     reset(){elapsed=SNOWMAN_REACTION_DURATION;if(root)applySnowmanPose(root,elapsed);},
     get active(){return elapsed<SNOWMAN_REACTION_DURATION;},
   };

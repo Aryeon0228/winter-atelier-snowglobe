@@ -27,3 +27,12 @@ test('letter UI opens, saves, downloads and closes using the same draft',async()
  globalThis.window={localStorage:s};globalThis.document={querySelector:id=>elements[id],createElement:()=>({getContext:()=>context(),toBlob:cb=>cb(new Blob(['png']))})};
  try{const ui=setupLetterUI({onClose:()=>closed++,getSceneCanvas:()=>({width:900,height:900}),download:()=>downloaded++});ui.open();assert.equal(ui.isOpen,true);elements['#letter-message'].value='메리 크리스마스!';elements['#letter-form'].dispatchEvent(new Event('input'));assert.equal(readLetter(s).message,'메리 크리스마스!');await elements['#letter-download'].onclick();assert.equal(downloaded,1);assert.equal(elements['#letter-download'].disabled,false);elements['#letter-form'].dispatchEvent(new Event('submit',{cancelable:true}));assert.equal(closed,1);assert.equal(ui.isOpen,false);}finally{globalThis.document=oldDocument;globalThis.window=oldWindow;}
 });
+
+test('mailbox squash and stretch stays grounded, preserves volume, rebinds and rests before the editor opens',()=>{
+ const root=createMailbox(),motion=createMailboxMotion();root.position.set(1.35,.625,-.55);motion.bind(root);let opened=0;motion.open(()=>opened++);
+ const reaction=root.getObjectByName('Mailbox_Reaction');motion.update(.14);assert.ok(reaction.scale.y<.92);assert.ok(reaction.scale.x>1.04);assert.ok(Math.abs(reaction.scale.x*reaction.scale.y*reaction.scale.z-1)<1e-10);assert.deepEqual(reaction.position.toArray(),[0,0,0]);assert.deepEqual(root.position.toArray(),[1.35,.625,-.55]);
+ const replacement=createMailbox();motion.bind(replacement);assert.equal(replacement.getObjectByName('Mailbox_Reaction').scale.y,reaction.scale.y);
+ const clone=replacement.clone(true);applyMailboxPose(clone);assert.deepEqual(clone.getObjectByName('Mailbox_Reaction').scale.toArray(),[1,1,1]);assert.ok(replacement.getObjectByName('Mailbox_Reaction').scale.y<1);
+ motion.update(.20);assert.ok(replacement.getObjectByName('Mailbox_Reaction').scale.y>1.08);assert.equal(opened,0);motion.update(.52);assert.equal(opened,1);assert.deepEqual(replacement.getObjectByName('Mailbox_Reaction').scale.toArray(),[1,1,1]);
+ motion.close();motion.update(1);assert.equal(replacement.getObjectByName('Mailbox_Door').rotation.x,0);assert.deepEqual(replacement.getObjectByName('Mailbox_Reaction').scale.toArray(),[1,1,1]);
+});

@@ -30,7 +30,13 @@ export function createGift(p=palettes.classic,index=0){
     mesh(new RoundedBoxGeometry(.15,.105,.018,1,.007),r,lid,[0,0,side*.425]);
     mesh(new RoundedBoxGeometry(.018,.105,.15,1,.007),r,lid,[side*.455,0,0]);
   }
-  const knot=bow(ribbons[index%3],1.1);knot.name='Gift_Bow';knot.rotation.x=-Math.PI/2;knot.position.set(0,.10,0);lid.add(knot);
+  const knot=bow(ribbons[index%3],1.1);knot.name='Gift_Bow';
+  // Lift each loop about the central knot, leaving the ribbon tails on the lid.
+  for(const loop of [...knot.children].filter(child=>child.geometry?.type==='TorusGeometry')){
+    const side=Math.sign(loop.position.x),hinge=new T.Group();hinge.name=side<0?'Gift_Bow_Loop_L':'Gift_Bow_Loop_R';
+    knot.add(hinge);hinge.add(loop);hinge.rotation.y=-side*Math.PI/4;
+  }
+  knot.rotation.x=-Math.PI/2;knot.position.set(0,.13,0);lid.add(knot);
   return o;
 }
 export function createRibbon(p=palettes.classic){const o=new T.Group();o.name='SpiralRibbon';const vertices=[],uv=[],indices=[],segments=240,width=.065;const left=[],right=[];for(let i=0;i<=segments;i++){const t=i/segments,y=1.05+2.98*t,angle=-Math.PI/2+t*Math.PI*6,r=1.03*(1-t)+.23;const x=Math.cos(angle)*r,z=Math.sin(angle)*r;vertices.push(x,y-width,z,x,y+width,z);uv.push(0,t*6,1,t*6);left.push(new T.Vector3(x,y-width,z));right.push(new T.Vector3(x,y+width,z));if(i<segments){const a=i*2;indices.push(a,a+1,a+2,a+1,a+3,a+2);}}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(vertices,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();const m=mat(p.cream,.17,.33);m.side=T.DoubleSide;mesh(g,m,o);for(const points of [left,right])mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points),240,.008,5,false),mat(p.gold,.7,.25),o);return o;}
@@ -113,5 +119,6 @@ export function createMailbox(p=palettes.classic){
   mesh(new T.CylinderGeometry(.012,.012,.25,12),gold,o,[.341,1.12,0]);
   mesh(new RoundedBoxGeometry(.12,.085,.018,2,.008),red,o,[.39,1.22,0]);
   for(const x of [-.15,0,.15]){const icicle=mesh(new T.SphereGeometry(1,12,8),snow,o,[x,1.16,.18]);icicle.scale.set(.033,.045,.025);}
+  const reaction=new T.Group();reaction.name='Mailbox_Reaction';for(const child of [...o.children])reaction.add(child);o.add(reaction);
   return o;
 }

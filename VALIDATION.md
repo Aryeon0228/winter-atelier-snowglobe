@@ -1,3 +1,11 @@
+## Raised gift bows / mailbox reaction / snow powder / scene controls
+
+- Removed the lower-left decorative star and upper-right icon buttons. Removed corresponding event handlers so missing elements cannot stop initialization. Manual orbit remains available; PNG letter-card export remains available in the letter editor.
+- Raised the two gift bow loops by 45 degrees around the knot. Ribbon tails stay on the lid; the bow follows the opening lid. Inspected the isolated model using the offline renderer and regenerated static downloads.
+- Added a ground-anchored mailbox reaction: 10% squash, 9% stretch, settling by 0.78 seconds before the letter editor opens. Deformation preserves volume and survives palette replacement; export resets it.
+- Added 44 soft white powder particles at snowman takeoff (0.14 seconds) and 52 on landing (0.84 seconds), emitted around the snow-level foot contact. A 128-particle pool bounds memory; particles remain inside the dome and fade completely. Excluded powder from the depth override pass and GLB export.
+- 19 automated tests pass, including grounded mailbox deformation/restoration and snow powder timing, rebind, repeated clicks, spawn location, finite bounds and expiry. Production build passes. The new powder shader and live browser appearance have not been visually verified because browser control is unavailable.
+
 ## Gift opening / confetti / snowman placement
 
 - Rebuilt gifts as hollow boxes with independent lids; lid ribbons and bows follow their lids. Click or keyboard button triggers anticipation, lift, one burst, hover and automatic closing over 2.7 seconds. Nine gifts keep separate states; palette rebuild preserves the pose; repeated clicks on an active gift do not restart it.
