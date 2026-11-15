@@ -1,3 +1,10 @@
+## Quiet tree rustle with bell ducking
+
+- Decoded user-provided pine_rustle(GEN_3).wav (MP3 bytes) to mono 48 kHz PCM. Preserved its 1.48-second duration, filtered below 80 Hz / above 4.8 kHz, reduced amplitude to 0.75, and added 15 ms / 180 ms fades. Output RMS 0.024396, peak -9.61 dBFS; endpoints zero, no clipping.
+- Tree movement from ornament placement, ornament clicks and globe shake triggers one rustle. Playback gain 0.55 versus bell 0.65; integrated RMS is about 11.2 dB below a single bell. A separate bus drops to 0.55 (another 5.2 dB) while any bell voice is active, with 12 ms duck / 160 ms recovery. Bell gain is unchanged.
+- 450 ms retrigger guard; a later movement fades the previous rustle out over 30 ms instead of stacking. Mute stops rustle voices as well as bells.
+- 26 tests pass, including retained-bell ducking, recovery after the final bell, retrigger limiting, unchanged bell gain, mute/loading races and existing geometry interactions. Actual browser listening remains unverified; audio-file levels and playback logic are verified.
+
 ## User-provided VARCO bell variants
 
 - Decoded the 6.36-second source (MP3 bytes despite its .wav name), selected 0.12–1.22 s and 4.72–5.95 s, removed DC, applied 6 ms attacks / 340 ms tail fades and matched RMS to 0.075. Outputs are true mono 48 kHz 16-bit PCM WAV, 1.10 / 1.23 seconds, zero first/last samples, peaks -6.33 / -4.64 dBFS, no clipping. Source hash and edit decisions are in bell-manifest.json; source file itself is not published.

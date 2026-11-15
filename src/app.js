@@ -66,7 +66,7 @@ function createSceneProps(){const p=palettes[paletteKey];disposeGroup(decor);dis
   $('#count').textContent=placements.length;$('#palette-name').textContent=p.name;
 }
 function addDecoration(item){const p=palettes[paletteKey],obj=item.type==='bell'?createBell(p):createBauble(p,item.variant);const {anchor,pivot}=createHangingOrnament(obj,item);decor.add(anchor);ornamentItems.set(anchor,item);treeMotion.bind(item,pivot);}
-function placeDecoration(item){placements.push(item);addDecoration(item);$('#count').textContent=placements.length;treeMotion.excite(item);sceneAudio.playBell();}
+function placeDecoration(item){placements.push(item);addDecoration(item);$('#count').textContent=placements.length;treeMotion.excite(item);sceneAudio.playBell();sceneAudio.playRustle();}
 createSceneProps();
 function normalizeModel(model,height){model.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());const scale=height/size.y;model.scale.multiplyScalar(scale);model.position.set(-center.x*scale,-bounds.min.y*scale,-center.z*scale);model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;if(o.material){o.material.roughness=Math.max(o.material.roughness||.5,.55);o.material.metalness=0;}}});return model;}
 const loader=new GLTFLoader();
@@ -116,10 +116,10 @@ $('#ribbon').onchange=()=>{ribbon.visible=$('#ribbon').checked;};
 $('#sound').onclick=async()=>{
   const button=$('#sound'),next=!sceneAudio.enabled;button.disabled=true;$('#sound-label').textContent=next?'소리 준비 중':'소리 꺼짐';
   try{const on=await sceneAudio.setEnabled(next);button.setAttribute('aria-pressed',String(on));$('#sound-label').textContent=on?'소리 켜짐':'소리 꺼짐';if(on)sceneAudio.playBell();}
-  catch(error){button.setAttribute('aria-pressed','false');$('#sound-label').textContent='소리 다시 켜기';toast('종소리를 불러오지 못했어요. 소리 버튼을 다시 눌러주세요.');console.error(error);}
+  catch(error){button.setAttribute('aria-pressed','false');$('#sound-label').textContent='소리 다시 켜기';toast('소리 파일을 불러오지 못했어요. 소리 버튼을 다시 눌러주세요.');console.error(error);}
   finally{button.disabled=false;}
 };
-$('#shake').onclick=()=>{shakePower=1;treeMotion.excite(null,1.6);for(let i=0;i<snowCount;i++)spawnSnow(i);chime();toast('눈송이가 다시 춤을 춰요');};
+$('#shake').onclick=()=>{shakePower=1;treeMotion.excite(null,1.6);for(let i=0;i<snowCount;i++)spawnSnow(i);sceneAudio.playRustle();toast('눈송이가 다시 춤을 춰요');};
 $('#undo').onclick=()=>{if(placements.length>initialDecor.length){placements.pop();createSceneProps();toast('마지막 장식을 지웠어요');}else toast('추가한 장식이 없어요');};
 $('#reset-decor').onclick=()=>{placements=initialDecor.map(o=>({...o}));createSceneProps();treeMotion.reset();giftMotion.reset();giftConfetti.clear();toast('처음 장식으로 되돌렸어요');};
 $('#add-ornament').onclick=()=>{if(!ready)return;if(placements.length>=40){toast('장식은 40개까지 달 수 있어요');return;}const i=placements.length-initialDecor.length,y=1.4+(i%4)*.55,r=1.0-(y-.8)*.24,a=.2+(i%7)*.65;placeDecoration({type:tool,x:-.43+Math.sin(a)*r,y,z:-.25+Math.cos(a)*r,variant:i%3});toast('장식이 딸랑, 트리도 살랑!');};
@@ -141,7 +141,7 @@ canvas.addEventListener('pointerup',e=>{
   if(!ready||!down||down.id!==e.pointerId||down.moved||Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)return;
   const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);world.updateMatrixWorld(true);raycaster.setFromCamera(pointer,camera);
   const hit=raycaster.intersectObjects([snowman,mailbox,treeMesh,gifts,decor],true)[0];if(!hit)return;
-  const ornament=findOrnamentHit(hit.object,ornamentItems);if(ornament){treeMotion.excite(ornament.item);sceneAudio.playBell();toast('딸랑! 장식이 흔들려요');return;}
+  const ornament=findOrnamentHit(hit.object,ornamentItems);if(ornament){treeMotion.excite(ornament.item);sceneAudio.playBell();sceneAudio.playRustle();toast('딸랑! 장식이 흔들려요');return;}
   let target=hit.object;while(target&&target!==snowman&&target!==mailbox&&target!==treeMesh&&target.parent!==gifts)target=target.parent;
   if(target?.parent===gifts){openGift(target);return;}
   if(target===snowman){surpriseSnowman();return;}
