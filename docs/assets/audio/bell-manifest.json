@@ -1,0 +1,33 @@
+{
+  "source_filename": "bell_ring(GEN_3).wav",
+  "source_sha256": "c7492595e7412f6fdb037e1f4931710f040d7bb6a313c5bd8f1c2cabb053135a",
+  "source_duration_seconds": 6.36,
+  "source_service": "VARCO Sound — user-provided generated audio",
+  "input_codec_note": "The source filename ends in .wav, but the uploaded bytes are MP3; decoded before editing.",
+  "output_format": "PCM WAV, 48000 Hz, mono, 16-bit",
+  "editing": "Two distinct source passages; DC removal, short fade-in, smooth tail fade, matched RMS with peak headroom. No generated or added audio.",
+  "variants": [
+    {
+      "file": "ornament-bell-a.wav",
+      "source_start_seconds": 0.12,
+      "source_end_seconds": 1.22,
+      "duration_seconds": 1.1,
+      "fade_in_seconds": 0.006,
+      "fade_out_seconds": 0.34,
+      "gain_db": 10.9,
+      "peak_dbfs": -6.33,
+      "sha256": "77483b6c6156a74f67b1949312d4b933955dfd73ebfdc05b30232847db2b7654"
+    },
+    {
+      "file": "ornament-bell-b.wav",
+      "source_start_seconds": 4.72,
+      "source_end_seconds": 5.95,
+      "duration_seconds": 1.23,
+      "fade_in_seconds": 0.006,
+      "fade_out_seconds": 0.34,
+      "gain_db": 10.16,
+      "peak_dbfs": -4.64,
+      "sha256": "b7d4ad7afe4eda3ae630c562d05dbd68e6c6fc85c4c761474c54c4cccb073ae6"
+    }
+  ]
+}

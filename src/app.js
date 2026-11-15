@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import {createSceneAudio} from './scene-audio.js';
+import {findOrnamentHit} from './ornament-picking.js';
 import {createSnowmanPowder} from './snowman-powder.js';
 import {createGiftMotion,applyGiftPose} from './gift-motion.js';
 import {createGiftConfetti} from './gift-confetti.js';
@@ -15,6 +17,7 @@ import {createCameraEffects} from './camera-effects.js';
 import {createBauble,createBell,createGift,createRibbon,createBase,createDome,createSnowman,createMailbox,palettes} from './props.js';
 
 const $=s=>document.querySelector(s),stage=$('#stage'),canvas=$('#scene');
+const sceneAudio=createSceneAudio(),ornamentItems=new WeakMap();
 let renderer;
 try{renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'high-performance',preserveDrawingBuffer:true});}catch(e){$('#loading').innerHTML='<strong>3D 화면을 열 수 없어요.</strong><span>WebGL을 지원하는 최신 브라우저에서 다시 열어주세요.</span>';throw e;}
 renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.85;
@@ -48,7 +51,7 @@ const giftConfetti=createGiftConfetti(world);
 const giftMotion=createGiftMotion((gift,age)=>giftConfetti.burst(gift,age));
 const snowmanPowder=createSnowmanPowder(world);
 const snowmanMotion=createSnowmanMotion((root,kind,age)=>snowmanPowder.burst(root,kind,age)),mailboxMotion=createMailboxMotion();let snowman=null,mailbox=null;
-let paletteKey='classic',tool='bauble',treeMesh=null,ready=false,muted=true,shakePower=0,globe=null,ribbon=null,base=null;
+let paletteKey='classic',tool='bauble',treeMesh=null,ready=false,shakePower=0,globe=null,ribbon=null,base=null;
 const initialDecor=[];
 for(let tier=0;tier<4;tier++){const y=[1.25,1.97,2.68,3.35][tier],r=[1.05,.84,.61,.38][tier];const count=[5,4,4,3][tier];for(let k=0;k<count;k++){const a=k/count*Math.PI*2+tier*.53;initialDecor.push({type:(k+tier)%4===0?'bell':'bauble',x:-.43+Math.sin(a)*r,y,z:-.25+Math.cos(a)*r,variant:(k+tier)%3});}}
 let placements=initialDecor.map(o=>({...o}));
@@ -62,8 +65,8 @@ function createSceneProps(){const p=palettes[paletteKey];disposeGroup(decor);dis
   treeMotion.clearBindings();for(const item of placements)addDecoration(item);
   $('#count').textContent=placements.length;$('#palette-name').textContent=p.name;
 }
-function addDecoration(item){const p=palettes[paletteKey],obj=item.type==='bell'?createBell(p):createBauble(p,item.variant);const {anchor,pivot}=createHangingOrnament(obj,item);decor.add(anchor);treeMotion.bind(item,pivot);}
-function placeDecoration(item){placements.push(item);addDecoration(item);$('#count').textContent=placements.length;treeMotion.excite(item);chime();}
+function addDecoration(item){const p=palettes[paletteKey],obj=item.type==='bell'?createBell(p):createBauble(p,item.variant);const {anchor,pivot}=createHangingOrnament(obj,item);decor.add(anchor);ornamentItems.set(anchor,item);treeMotion.bind(item,pivot);}
+function placeDecoration(item){placements.push(item);addDecoration(item);$('#count').textContent=placements.length;treeMotion.excite(item);sceneAudio.playBell();}
 createSceneProps();
 function normalizeModel(model,height){model.updateMatrixWorld(true);const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());const scale=height/size.y;model.scale.multiplyScalar(scale);model.position.set(-center.x*scale,-bounds.min.y*scale,-center.z*scale);model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;if(o.material){o.material.roughness=Math.max(o.material.roughness||.5,.55);o.material.metalness=0;}}});return model;}
 const loader=new GLTFLoader();
@@ -105,12 +108,17 @@ $('#post-effects').onchange=()=>cameraEffects.enable($('#post-effects').checked)
 $('#bloom').oninput=()=>{cameraEffects.bloom.strength=Number($('#bloom').value)/100;$('#bloom-value').textContent=$('#bloom').value+'%';};
 $('#dof').oninput=()=>{cameraEffects.dof.uniforms.aperture.value=Number($('#dof').value)*.000075;$('#dof-value').textContent=$('#dof').value+'%';};
 $('#environment').oninput=()=>{scene.environmentIntensity=Number($('#environment').value)/100;$('#environment-value').textContent=$('#environment').value+'%';};
-let audioContext;function chime(){if(muted)return;try{audioContext??=new AudioContext();audioContext.resume();[880,1174.66,1567.98].forEach((f,i)=>{const osc=audioContext.createOscillator(),gain=audioContext.createGain(),t=audioContext.currentTime+i*.09;osc.type='sine';osc.frequency.value=f;gain.gain.setValueAtTime(0,t);gain.gain.linearRampToValueAtTime(.045,t+.012);gain.gain.exponentialRampToValueAtTime(.0001,t+.8);osc.connect(gain);gain.connect(audioContext.destination);osc.start(t);osc.stop(t+.85);});}catch{}}
+function chime(){sceneAudio.chime();}
 function toast(text){$('#status').textContent=text;$('#status').classList.remove('pulse');requestAnimationFrame(()=>$('#status').classList.add('pulse'));}
 document.querySelectorAll('[data-palette]').forEach(b=>b.onclick=()=>{paletteKey=b.dataset.palette;document.querySelectorAll('[data-palette]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));createSceneProps();toast(palettes[paletteKey].name+' 팔레트로 바꿨어요');chime();});
 document.querySelectorAll('[data-tool]').forEach(b=>b.onclick=()=>{tool=b.dataset.tool;document.querySelectorAll('[data-tool]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));toast((tool==='bell'?'종':'방울')+'을 달 곳을 트리에서 눌러주세요');});
 $('#ribbon').onchange=()=>{ribbon.visible=$('#ribbon').checked;};
-$('#sound').onclick=()=>{muted=!muted;$('#sound').setAttribute('aria-pressed',String(!muted));$('#sound-label').textContent=muted?'소리 꺼짐':'소리 켜짐';chime();};
+$('#sound').onclick=async()=>{
+  const button=$('#sound'),next=!sceneAudio.enabled;button.disabled=true;$('#sound-label').textContent=next?'소리 준비 중':'소리 꺼짐';
+  try{const on=await sceneAudio.setEnabled(next);button.setAttribute('aria-pressed',String(on));$('#sound-label').textContent=on?'소리 켜짐':'소리 꺼짐';if(on)sceneAudio.playBell();}
+  catch(error){button.setAttribute('aria-pressed','false');$('#sound-label').textContent='소리 다시 켜기';toast('종소리를 불러오지 못했어요. 소리 버튼을 다시 눌러주세요.');console.error(error);}
+  finally{button.disabled=false;}
+};
 $('#shake').onclick=()=>{shakePower=1;treeMotion.excite(null,1.6);for(let i=0;i<snowCount;i++)spawnSnow(i);chime();toast('눈송이가 다시 춤을 춰요');};
 $('#undo').onclick=()=>{if(placements.length>initialDecor.length){placements.pop();createSceneProps();toast('마지막 장식을 지웠어요');}else toast('추가한 장식이 없어요');};
 $('#reset-decor').onclick=()=>{placements=initialDecor.map(o=>({...o}));createSceneProps();treeMotion.reset();giftMotion.reset();giftConfetti.clear();toast('처음 장식으로 되돌렸어요');};
@@ -132,7 +140,8 @@ canvas.addEventListener('pointerup',e=>{
   const down=pointerDown;pointerDown=null;
   if(!ready||!down||down.id!==e.pointerId||down.moved||Math.hypot(e.clientX-down.x,e.clientY-down.y)>6)return;
   const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);world.updateMatrixWorld(true);raycaster.setFromCamera(pointer,camera);
-  const hit=raycaster.intersectObjects([snowman,mailbox,treeMesh,gifts],true)[0];if(!hit)return;
+  const hit=raycaster.intersectObjects([snowman,mailbox,treeMesh,gifts,decor],true)[0];if(!hit)return;
+  const ornament=findOrnamentHit(hit.object,ornamentItems);if(ornament){treeMotion.excite(ornament.item);sceneAudio.playBell();toast('딸랑! 장식이 흔들려요');return;}
   let target=hit.object;while(target&&target!==snowman&&target!==mailbox&&target!==treeMesh&&target.parent!==gifts)target=target.parent;
   if(target?.parent===gifts){openGift(target);return;}
   if(target===snowman){surpriseSnowman();return;}

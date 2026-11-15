@@ -21,7 +21,9 @@
 - `src/props.js`와 `docs/assets/props/`: Studio Aryeon 프로젝트에서 AI 코드 보조로 제작한 기하학 소품. 외부 에셋 스토어 모델을 사용하지 않았습니다.
 - `ornaments.zip`: 방울, 종, 선물상자, 리본, 받침대, 돔, 눈사람, 우체통 및 선물상자 색 변형 GLB.
 - 겨울 실내 배경·창문·전구·환경 반사 맵·눈 결정·눈 더미도 절차적으로 제작했습니다. 외부 HDRI나 배경 사진을 사용하지 않았습니다.
-- 효과음: 브라우저 Web Audio 오실레이터로 합성. 음원 파일이나 VARCO Sound 생성물을 사용하지 않았습니다.
+- 오너먼트 종소리: 사용자가 제공한 VARCO Sound 생성 파일 `bell_ring(GEN_3).wav`를 두 구간으로 편집했습니다. `docs/assets/audio/ornament-bell-a.wav` (1.10초), `ornament-bell-b.wav` (1.23초). 원본의 서로 다른 타격 구간을 사용했고 DC 제거·앞뒤 페이드·음량 정리를 적용했습니다. [편집 정보와 원본 해시](docs/assets/audio/bell-manifest.json).
+- 원본은 사용자 제공 자료이며 생성 프롬프트는 아직 기록되지 않았습니다. 편집한 두 파일만 웹에 포함합니다.
+- 기타 상호작용의 기존 간단한 차임은 브라우저 Web Audio 오실레이터 합성입니다. 배경음악 및 다른 VARCO 효과음은 아직 포함하지 않았습니다.
 - 서체: 운영체제 기본 서체. 외부 폰트 요청 없음.
 
 ## Software

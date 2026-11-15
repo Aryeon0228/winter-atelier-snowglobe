@@ -1,3 +1,11 @@
+## User-provided VARCO bell variants
+
+- Decoded the 6.36-second source (MP3 bytes despite its .wav name), selected 0.12–1.22 s and 4.72–5.95 s, removed DC, applied 6 ms attacks / 340 ms tail fades and matched RMS to 0.075. Outputs are true mono 48 kHz 16-bit PCM WAV, 1.10 / 1.23 seconds, zero first/last samples, peaks -6.33 / -4.64 dBFS, no clipping. Source hash and edit decisions are in bell-manifest.json; source file itself is not published.
+- Added existing ornaments to nearest-hit selection. Nested meshes resolve to their top hook and excite the corresponding pendulum without adding another decoration. New placement also plays the imported audio.
+- One lazy AudioContext for imported bells and pre-existing generic chime. Default muted, explicit sound-button resume, cached decoded buffers, A/B alternation, 80 ms retrigger guard and maximum 3 concurrent bell voices. Muting cancels voices and prevents pending loads from playing late; failed loads can be retried.
+- 25 automated tests pass, including alternation/cache/polyphony/mute/loading races/failure recovery and real Three.js raycasts against bauble and bell meshes. PCM inspection verifies durations, RMS, endpoints and headroom. Audio browser playback and subjective listening have not been verified in this environment.
+- Portfolio includes native audio previews and distinguishes user-provided VARCO Sound clips from the existing synthesized cues.
+
 ## Aurora colored highlights
 
 - Aurora purple now uses cyan specular/sheen; turquoise and pale blue metallic-accent colors use pink/magenta specular/sheen. Base colors remain unchanged and emission stays zero. Glossy props use low-metalness physical enamel with roughness capped at 0.22, IOR 1.8 and a light clearcoat. Hat/scarf keep their original roughness with tinted fabric sheen and no clearcoat.
