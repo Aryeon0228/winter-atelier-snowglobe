@@ -14,7 +14,7 @@ test('body jumps; head and hat separate visibly and land in order',()=>{
 });
 test('repeated clicks do not restart midair; palette rebind preserves pose; rest and export restore exactly',()=>{
  const root=createSnowman(),motion=createSnowmanMotion();motion.bind(root);assert.equal(motion.jump(),true);motion.update(.5);const before=root.getObjectByName('Snowman_Head').position.y;assert.equal(motion.jump(),false);assert.equal(root.getObjectByName('Snowman_Head').position.y,before);
- const replacement=createSnowman(palettes.rose);motion.bind(replacement);assert.equal(replacement.getObjectByName('Snowman_Head').position.y,before);
+ const replacement=createSnowman(palettes.aurora);motion.bind(replacement);assert.equal(replacement.getObjectByName('Snowman_Head').position.y,before);
  const copy=replacement.clone(true);applySnowmanPose(copy);assert.equal(copy.getObjectByName('Snowman_Body').position.y,0);assert.equal(copy.getObjectByName('Snowman_Head').position.y,.88);assert.equal(copy.getObjectByName('Snowman_Pointy_Hat').position.y,1.075);assert.equal(replacement.getObjectByName('Snowman_Head').position.y,before);
  motion.update(2);assert.equal(motion.active,false);assert.equal(replacement.getObjectByName('Snowman_Head').position.y,.88);assert.equal(motion.jump(),true);
 });
